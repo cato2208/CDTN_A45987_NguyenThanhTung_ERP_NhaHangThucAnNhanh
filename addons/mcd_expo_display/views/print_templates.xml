@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="print_pick_list_template" name="Expo Pick List Print">
+        <html>
+            <head>
+                <title>Pick List</title>
+                <style>
+                    @page { size: 80mm auto; margin: 4mm; }
+                    body {
+                        color: #111;
+                        font-family: Arial, sans-serif;
+                        font-size: 13px;
+                        margin: 0;
+                    }
+                    .ticket {
+                        width: 72mm;
+                    }
+                    .title {
+                        border-bottom: 2px solid #111;
+                        font-size: 20px;
+                        font-weight: 800;
+                        letter-spacing: 1px;
+                        margin-bottom: 8px;
+                        padding-bottom: 6px;
+                        text-align: center;
+                    }
+                    .meta {
+                        border-bottom: 1px dashed #777;
+                        margin-bottom: 10px;
+                        padding-bottom: 8px;
+                    }
+                    .meta-row {
+                        display: flex;
+                        justify-content: space-between;
+                        margin: 3px 0;
+                    }
+                    .order-no {
+                        font-size: 18px;
+                        font-weight: 800;
+                    }
+                    .service {
+                        border: 1px solid #111;
+                        display: inline-block;
+                        font-weight: 800;
+                        margin-top: 4px;
+                        padding: 3px 8px;
+                    }
+                    .line {
+                        border-bottom: 1px dashed #ccc;
+                        padding: 7px 0;
+                    }
+                    .item-main {
+                        display: flex;
+                        gap: 8px;
+                    }
+                    .qty {
+                        font-size: 18px;
+                        font-weight: 800;
+                        min-width: 26px;
+                    }
+                    .name {
+                        flex: 1;
+                        font-size: 15px;
+                        font-weight: 800;
+                    }
+                    .modifier {
+                        font-size: 12px;
+                        margin-left: 34px;
+                        margin-top: 3px;
+                        white-space: pre-wrap;
+                    }
+                    .footer {
+                        border-top: 2px solid #111;
+                        font-size: 11px;
+                        margin-top: 12px;
+                        padding-top: 6px;
+                        text-align: center;
+                    }
+                    @media print {
+                        .no-print { display: none; }
+                    }
+                </style>
+                <script>
+                    window.addEventListener('load', function () {
+                        setTimeout(function () { window.print(); }, 250);
+                    });
+                </script>
+            </head>
+            <body>
+                <div class="ticket">
+                    <div class="title">PICK LIST</div>
+                    <div class="meta">
+                        <div class="meta-row">
+                            <span>Order</span>
+                            <span class="order-no" t-esc="order.name"/>
+                        </div>
+                        <div class="service">
+                            <t t-esc="order.service_type == 'take_out' and 'TAKE OUT' or 'EAT IN'"/>
+                        </div>
+                        <div class="meta-row">
+                            <span>Order Time</span>
+                            <span t-esc="order_time"/>
+                        </div>
+                        <div class="meta-row" t-if="serve_time">
+                            <span>Serve Time</span>
+                            <span t-esc="serve_time"/>
+                        </div>
+                    </div>
+
+                    <t t-foreach="order.line_ids" t-as="line">
+                        <div class="line">
+                            <div class="item-main">
+                                <span class="qty">x<t t-esc="line.qty"/></span>
+                                <span class="name" t-esc="line.product_name"/>
+                            </div>
+                            <div class="modifier" t-if="line.modifier_note">
+                                <t t-esc="line.modifier_note"/>
+                            </div>
+                        </div>
+                    </t>
+
+                    <div class="footer">
+                        Printed <t t-esc="printed_at"/>
+                    </div>
+                </div>
+            </body>
+        </html>
+    </template>
+</odoo>

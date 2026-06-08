@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="mcd_login_layout" inherit_id="web.login_layout" name="McDonald Login Layout">
+        <xpath expr="//div[contains(@class, 'container') and contains(@class, 'py-5')]" position="replace">
+            <div class="mcd-login-page">
+                <section class="mcd-login-brand">
+                    <div class="mcd-login-mark">
+                        <img src="/mcd_backend_theme/static/src/img/login-logo.png" alt="McDonald's"/>
+                    </div>
+                    <p class="mcd-login-kicker">McDonald Operations</p>
+                    <h1>Hệ thống quản lý cửa hàng</h1>
+                    <p class="mcd-login-copy">
+                        Kết nối POS, bếp, giao món, kho và báo cáo vận hành trên một nền tảng.
+                    </p>
+                    <div class="mcd-login-points">
+                        <span>POS</span>
+                        <span>KDS</span>
+                        <span>EXPO</span>
+                        <span>Dashboard</span>
+                    </div>
+                </section>
+                <section class="mcd-login-card-wrap">
+                    <div t-attf-class="card border-0 mx-auto {{login_card_classes}} o_database_list mcd-login-card">
+                        <div class="card-body">
+                            <div t-attf-class="text-center pb-3 border-bottom {{'mb-3' if form_small else 'mb-4'}}">
+                                <img src="/mcd_backend_theme/static/src/img/login-logo.png" alt="Logo" class="mcd-login-logo"/>
+                            </div>
+                            <t t-out="0"/>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="mcd_login_form_text" inherit_id="web.login" name="McDonald Login Text">
+        <xpath expr="//label[@for='login']" position="replace">
+            <label for="login" class="form-label">Tài khoản</label>
+        </xpath>
+        <xpath expr="//input[@id='login']" position="attributes">
+            <attribute name="placeholder">Nhập tài khoản</attribute>
+        </xpath>
+        <xpath expr="//label[@for='password']" position="replace">
+            <label for="password" class="form-label">Mật khẩu</label>
+        </xpath>
+        <xpath expr="//input[@id='password']" position="attributes">
+            <attribute name="placeholder">Nhập mật khẩu</attribute>
+        </xpath>
+        <xpath expr="//button[@type='submit' and contains(@class, 'btn-primary')]" position="replace">
+            <button type="submit" class="btn btn-primary">Đăng nhập</button>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_partner_mcd_form" model="ir.ui.view">
+        <field name="name">res.partner.mcd.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="McDonald's" invisible="not mcd_is_customer">
+                    <group>
+                        <group string="Thông tin khách hàng">
+                            <field name="mcd_is_customer" string="Khách hàng MCD"/>
+                            <field name="mcd_birthdate"/>
+                            <field name="mcd_is_new" readonly="1"/>
+                        </group>
+                        <group string="Thống kê mua hàng">
+                            <field name="mcd_order_count"/>
+                            <field name="mcd_total_spent"/>
+                            <field name="mcd_loyalty_points"/>
+                            <field name="mcd_first_order"/>
+                            <field name="mcd_last_order"/>
+                        </group>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <record id="view_mcd_customer_tree" model="ir.ui.view">
+        <field name="name">res.partner.mcd.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Khách hàng MCD">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="mobile"/>
+                <field name="mcd_birthdate"/>
+                <field name="mcd_order_count"/>
+                <field name="mcd_total_spent"/>
+                <field name="mcd_loyalty_points"/>
+                <field name="mcd_first_order"/>
+                <field name="mcd_last_order"/>
+                <field name="mcd_is_new"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_mcd_customer_search" model="ir.ui.view">
+        <field name="name">res.partner.mcd.search</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <search string="Tìm khách hàng MCD">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="mobile"/>
+                <filter string="Khách mới" name="new_customer" domain="[('mcd_order_count', '=', 0)]"/>
+                <filter string="Có điểm tích lũy" name="has_points" domain="[('mcd_loyalty_points', '&gt;', 0)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_mcd_customers" model="ir.actions.act_window">
+        <field name="name">Khách hàng MCD</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('mcd_is_customer', '=', True)]</field>
+        <field name="context">{'default_mcd_is_customer': True, 'default_customer_rank': 1}</field>
+        <field name="search_view_id" ref="view_mcd_customer_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_mcd_customer_tree')}),
+        ]"/>
+    </record>
+
+    <menuitem id="menu_mcd_customer_root"
+        name="MCD Customers"
+        sequence="55"/>
+
+    <menuitem id="menu_mcd_customers"
+        name="Danh sách khách hàng"
+        parent="menu_mcd_customer_root"
+        action="action_mcd_customers"
+        sequence="1"/>
+
+</odoo>

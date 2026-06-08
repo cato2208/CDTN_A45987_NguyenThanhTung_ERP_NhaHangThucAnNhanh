@@ -1,0 +1,1119 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="mcd_kds.KDSDashboard" owl="1">
+<div class="kds-db-wrap">
+<div class="kds-db">
+
+  <!-- HEADER -->
+  <div class="kds-db-header">
+    <div class="kds-db-brand">
+      <span class="kds-db-logo">MCD</span>
+      <span class="kds-db-title">Phân tích McDonald</span>
+    </div>
+    <div class="kds-db-nav">
+      <t t-foreach="[['manager','Tổng quan'],['kitchen','Bếp'],['expo','Giao món'],['sales','Bán hàng'],['inventory','Kho'],['waste','Hàng hủy']]" t-as="v" t-key="v[0]">
+        <button t-on-click="() => this.setView(v[0])"
+                t-att-class="state.view === v[0] ? 'kds-nav-btn active' : 'kds-nav-btn'"
+                t-esc="v[1]"/>
+      </t>
+    </div>
+    <div class="kds-db-periods">
+      <div class="kds-period-widget">
+        <div class="kds-period-control">
+          <button t-att-class="state.period === 'day' ? (state.dashboardDate ? 'kds-period-btn' : 'kds-period-btn active') : 'kds-period-btn'"
+                  t-on-click="() => this.setPeriod('day')">Hôm nay</button>
+          <button t-att-class="state.period === 'week' ? 'kds-period-btn active' : 'kds-period-btn'"
+                  t-on-click="() => this.setPeriod('week')">Tuần</button>
+          <button t-att-class="state.period === 'month' ? 'kds-period-btn active' : 'kds-period-btn'"
+                  t-on-click="() => this.setPeriod('month')">Tháng</button>
+          <button t-att-class="state.period === 'year' ? 'kds-period-btn active' : 'kds-period-btn'"
+                  t-on-click="() => this.setPeriod('year')">Năm</button>
+        </div>
+        <div t-att-class="state.dashboardDate ? 'kds-global-filter active' : 'kds-global-filter'">
+          <span class="kds-global-filter__label">Ngày</span>
+          <input id="dashboard-date-input" type="date"
+                 class="kds-global-filter__date"
+                 t-att-value="state.dashboardDate || ''"
+                 t-att-max="todayDate()"
+                 t-att-disabled="state.period !== 'day'"
+                 t-on-change="(e) => this.setDashboardDate(e.target.value)"
+                 t-on-blur="(e) => this.setDashboardDate(e.target.value)"/>
+        </div>
+        <div t-att-class="state.dashboardMonth ? 'kds-global-filter active' : 'kds-global-filter'">
+          <span class="kds-global-filter__label">Tháng</span>
+          <input type="month"
+                 class="kds-global-filter__date"
+                 t-att-value="state.dashboardMonth || currentMonth()"
+                 t-att-max="currentMonth()"
+                 t-att-disabled="state.period !== 'month'"
+                 t-on-change="(e) => this.setDashboardMonth(e.target.value)"
+                 t-on-blur="(e) => this.setDashboardMonth(e.target.value)"/>
+        </div>
+        <div t-att-class="state.dashboardYear ? 'kds-global-filter active' : 'kds-global-filter'">
+          <span class="kds-global-filter__label">Năm</span>
+          <input type="number"
+                 class="kds-global-filter__date kds-global-filter__year"
+                 min="2020"
+                 t-att-max="currentYear()"
+                 t-att-value="state.dashboardYear || currentYear()"
+                 t-att-disabled="state.period !== 'year'"
+                 t-on-change="(e) => this.setDashboardYear(e.target.value)"
+                 t-on-blur="(e) => this.setDashboardYear(e.target.value)"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Giờ hoạt động badge -->
+  <div class="kds-hours-badge">Giờ ghi nhận: 09:00 - 22:00</div>
+
+  <div t-if="state.loading" class="kds-db-loading"><i class="fa fa-spinner fa-spin"/> Đang tải dữ liệu...</div>
+  <div t-if="state.error"   class="kds-db-error" t-esc="state.error"/>
+
+  <!--  MANAGER  -->
+  <t t-if="!state.loading and state.view === 'manager' and state.data">
+    <div class="kds-db-section-title">Bảng tổng quan - Quản lý</div>
+    <div class="kds-db-cards kds-db-cards--6">
+      <div class="kds-db-card kds-db-card--blue">
+        <span class="kds-db-card__label">Tổng đơn</span>
+        <span class="kds-db-card__value" t-esc="state.data.total_orders"/>
+      </div>
+      <div class="kds-db-card kds-db-card--green">
+        <span class="kds-db-card__label">Doanh thu</span>
+        <span class="kds-db-card__value" t-esc="formatVND(state.data.total_revenue)"/>
+      </div>
+      <div class="kds-db-card kds-db-card--orange">
+        <span class="kds-db-card__label">TG chế biến TB</span>
+        <span class="kds-db-card__value" t-esc="formatDuration(state.data.kitchen_avg_duration)"/>
+      </div>
+      <div class="kds-db-card kds-db-card--purple">
+        <span class="kds-db-card__label">TG phục vụ TB</span>
+        <span class="kds-db-card__value" t-esc="formatDuration(state.data.expo_avg_duration)"/>
+      </div>
+      <div class="kds-db-card kds-db-card--red">
+        <span class="kds-db-card__label" t-esc="state.data.peak_label_title || 'Giờ cao điểm'"/>
+        <span class="kds-db-card__value" t-esc="state.data.peak_display || state.data.peak_hour"/>
+      </div>
+      <div class="kds-db-card">
+        <span class="kds-db-card__label">Giá trị đơn TB</span>
+        <span class="kds-db-card__value" t-esc="formatVND(state.data.avg_order_value)"/>
+      </div>
+    </div>
+
+    <div class="kds-db-cards kds-db-cards--6">
+      <div class="kds-db-card kds-db-card--green">
+        <span class="kds-db-card__label">Lợi nhuận gộp</span>
+        <span class="kds-db-card__value" t-esc="formatVND((state.data.profitability || {}).gross_profit || 0)"/>
+      </div>
+      <div t-att-class="((state.data.profitability || {}).food_cost_rate || 0) &gt; 45 ? 'kds-db-card kds-db-card--red' : 'kds-db-card kds-db-card--orange'">
+        <span class="kds-db-card__label">Food cost</span>
+        <span class="kds-db-card__value" t-esc="((state.data.profitability || {}).food_cost_rate || 0) + '%'"/>
+      </div>
+      <div class="kds-db-card kds-db-card--purple">
+        <span class="kds-db-card__label">Gross margin</span>
+        <span class="kds-db-card__value" t-esc="((state.data.profitability || {}).gross_margin || 0) + '%'"/>
+      </div>
+      <div class="kds-db-card kds-db-card--blue">
+        <span class="kds-db-card__label">Khách mới</span>
+        <span class="kds-db-card__value" t-esc="(state.data.customer_mix || {}).new_customers || 0"/>
+      </div>
+      <div class="kds-db-card kds-db-card--green">
+        <span class="kds-db-card__label">Khách quay lại</span>
+        <span class="kds-db-card__value" t-esc="(state.data.customer_mix || {}).returning_customers || 0"/>
+      </div>
+      <div class="kds-db-card">
+        <span class="kds-db-card__label">Tỷ lệ quay lại</span>
+        <span class="kds-db-card__value" t-esc="((state.data.customer_mix || {}).returning_rate || 0) + '%'"/>
+      </div>
+    </div>
+
+    <div class="kds-control-tower">
+      <div t-att-class="'kds-health-card kds-health-card--' + healthTone(state.data.health_score)">
+          <span>Sức khỏe vận hành</span>
+        <strong t-esc="(state.data.health_score || 0) + '/100'"/>
+        <em t-esc="state.data.health_status"/>
+      </div>
+      <div class="kds-control-metrics">
+        <button type="button" class="kds-control-metric" t-on-click="() => this.setView('kitchen')">
+          <span>SLA bếp</span>
+          <strong t-esc="formatPercent(state.data.kitchen_sla_rate)"/>
+        </button>
+        <button type="button" class="kds-control-metric" t-on-click="() => this.setView('expo')">
+          <span>SLA giao món</span>
+          <strong t-esc="formatPercent(state.data.expo_sla_rate)"/>
+        </button>
+        <button type="button" class="kds-control-metric" t-on-click="() => this.setView('waste')">
+          <span>Tỷ lệ hàng hủy</span>
+          <strong t-esc="formatPercent(state.data.waste_ratio)"/>
+        </button>
+        <button type="button" class="kds-control-metric" t-on-click="() => this.setView('kitchen')">
+          <span>đơn bếp quá hạn</span>
+          <strong t-esc="formatCount(state.data.kitchen_overdue_count || 0) + ' đơn'"/>
+        </button>
+        <button type="button" class="kds-control-metric" t-on-click="() => this.setView('expo')">
+          <span>đơn giao quá hạn</span>
+          <strong t-esc="formatCount(state.data.expo_overdue_count || 0) + ' đơn'"/>
+        </button>
+      </div>
+    </div>
+
+    <div class="kds-report-grid">
+      <div class="kds-report-panel">
+        <h3 class="kds-db-panel__title">So sánh kỳ báo cáo</h3>
+        <div class="kds-comparison-grid">
+          <div t-att-class="'kds-comparison-card kds-comparison-card--' + comparisonTone((state.data.comparison.revenue || {}).growth)">
+            <span>Doanh thu</span>
+            <strong t-esc="formatDelta((state.data.comparison.revenue || {}).delta || 0, 'money')"/>
+            <em><t t-esc="formatTrend((state.data.comparison.revenue || {}).growth)"/> so với <t t-esc="state.data.comparison_label"/></em>
+          </div>
+          <div t-att-class="'kds-comparison-card kds-comparison-card--' + comparisonTone((state.data.comparison.orders || {}).growth)">
+            <span>Số đơn</span>
+            <strong t-esc="formatDelta((state.data.comparison.orders || {}).delta || 0, 'orders')"/>
+            <em><t t-esc="formatTrend((state.data.comparison.orders || {}).growth)"/> so với <t t-esc="state.data.comparison_label"/></em>
+          </div>
+          <div t-att-class="'kds-comparison-card kds-comparison-card--' + comparisonTone((state.data.comparison.avg_order_value || {}).growth)">
+            <span>Giá trị đơn TB</span>
+            <strong t-esc="formatDelta((state.data.comparison.avg_order_value || {}).delta || 0, 'money')"/>
+            <em><t t-esc="formatTrend((state.data.comparison.avg_order_value || {}).growth)"/> so với <t t-esc="state.data.comparison_label"/></em>
+          </div>
+          <div t-att-class="'kds-comparison-card kds-comparison-card--' + comparisonTone((state.data.comparison.items || {}).growth)">
+            <span>Số món bán</span>
+            <strong t-esc="formatDelta((state.data.comparison.items || {}).delta || 0, 'qty')"/>
+            <em><t t-esc="formatTrend((state.data.comparison.items || {}).growth)"/> so với <t t-esc="state.data.comparison_label"/></em>
+          </div>
+        </div>
+      </div>
+      <div class="kds-report-panel">
+        <h3 class="kds-db-panel__title"> Cơ cấu doanh thu</h3>
+        <div class="kds-composition-summary">
+          <strong><t t-esc="state.data.composition.top_product || ''"/>  <t t-esc="state.data.composition.top_product_share || 0"/>%</strong>
+          <span>Top 3 món chiếm <t t-esc="state.data.composition.top3_revenue_share || 0"/>% doanh thu</span>
+        </div>
+        <t t-foreach="state.data.composition.product_mix || []" t-as="mix" t-key="mix.name">
+          <div class="kds-mix-row">
+            <span t-esc="mix.name"/>
+            <div class="kds-mix-track"><div class="kds-mix-fill" t-att-style="'width:' + (mix.revenue_share || 0) + '%'"/></div>
+            <strong><t t-esc="mix.revenue_share || 0"/>%</strong>
+          </div>
+        </t>
+      </div>
+    </div>
+
+    <div class="kds-db-panel kds-insight-panel">
+      <h3 class="kds-db-panel__title">Cảnh báo hành động</h3>
+      <div class="kds-insight-list">
+        <button t-foreach="state.data.action_alerts || []"
+                t-as="alert"
+                t-key="alert.title"
+                type="button"
+                t-att-class="'kds-insight-row kds-insight-row--' + (alert.type || 'info')"
+                t-on-click="() => alert.target ? this.setView(alert.target) : undefined">
+          <span>
+            <strong t-esc="alert.title"/>
+            <em t-esc="alert.body"/>
+          </span>
+          <i t-if="alert.target" class="fa fa-angle-right"/>
+        </button>
+      </div>
+    </div>
+
+    <div class="kds-db-panel kds-insight-panel">
+      <h3 class="kds-db-panel__title"> Nhận xét thống kê tự động</h3>
+      <div class="kds-insight-list">
+        <button t-foreach="(state.data.statistical_insights || []).length ? state.data.statistical_insights : (state.data.alerts || [])"
+                t-as="alert"
+                t-key="alert.title"
+                type="button"
+                t-att-class="'kds-insight-row kds-insight-row--' + (alert.type || 'info')"
+                t-on-click="() => alert.target ? this.setView(alert.target) : undefined">
+          <span>
+            <strong t-esc="alert.title"/>
+            <em t-esc="alert.body"/>
+          </span>
+          <i t-if="alert.target" class="fa fa-angle-right"/>
+        </button>
+      </div>
+    </div>
+
+    <div class="kds-db-row">
+      <div class="kds-db-panel kds-db-panel--wide">
+        <h3 class="kds-db-panel__title">Doanh thu theo thời gian (triệu)</h3>
+        <div class="kds-db-chart"><canvas t-ref="revChart"/></div>
+      </div>
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Món bán chạy nhất</h3>
+        <t t-if="!(state.data.top_products || []).length">
+          <div class="kds-db-empty">Chưa có dữ liệu</div>
+        </t>
+        <t t-foreach="state.data.top_products || []" t-as="p" t-key="p.name">
+          <div class="kds-db-list-row">
+            <span t-esc="p.name"/>
+            <strong t-esc="formatQty(p.qty) + ' món'"/>
+          </div>
+        </t>
+      </div>
+    </div>
+    <div t-if="state.chartSelection" class="kds-chart-drilldown">
+      <div class="kds-chart-drilldown__head">
+        <div>
+          <span class="kds-chart-drilldown__title" t-esc="state.chartSelection.title"/>
+          <strong class="kds-chart-drilldown__label" t-esc="state.chartSelection.label"/>
+        </div>
+        <strong class="kds-chart-drilldown__value" t-esc="state.chartSelection.displayValue"/>
+        <button type="button" class="kds-chart-drilldown__close" t-on-click="() => this.clearChartSelection()"></button>
+      </div>
+      <div t-if="(state.chartSelection.details || []).length" class="kds-chart-drilldown__metrics">
+        <div t-foreach="state.chartSelection.details || []" t-as="detail" t-key="detail.label" class="kds-chart-drilldown__metric">
+          <span t-esc="detail.label"/>
+          <strong t-esc="detail.value"/>
+        </div>
+      </div>
+      <div t-if="(state.chartSelection.items || []).length" class="kds-chart-drilldown__items">
+        <span class="kds-chart-drilldown__items-title" t-esc="state.chartSelection.itemsTitle || 'Chi tiết'"/>
+        <div t-foreach="state.chartSelection.items || []" t-as="item" t-key="item.name" class="kds-chart-drilldown__item">
+          <span t-esc="item.name"/>
+          <em t-esc="item.meta"/>
+          <strong t-esc="item.value"/>
+        </div>
+      </div>
+      <div t-if="state.chartSelection.hint" class="kds-chart-drilldown__hint" t-esc="state.chartSelection.hint"/>
+    </div>
+  </t>
+
+  <!--  KITCHEN  -->
+  <t t-if="!state.loading and state.view === 'kitchen' and state.data">
+    <div class="kds-db-section-title">Bảng bếp - Bếp trưởng</div>
+    <div class="kds-db-cards kds-db-cards--6">
+      <div class="kds-db-card kds-db-card--orange">
+        <span class="kds-db-card__label"> TG chế biến TB</span>
+        <span class="kds-db-card__value" t-esc="formatDuration(state.data.avg_duration)"/>
+      </div>
+      <div class="kds-db-card kds-db-card--green">
+        <span class="kds-db-card__label"> Nhanh nhất</span>
+        <span class="kds-db-card__value" t-esc="formatDuration(state.data.fastest)"/>
+      </div>
+      <div class="kds-db-card kds-db-card--red">
+        <span class="kds-db-card__label"> Chậm nhất</span>
+        <span class="kds-db-card__value" t-esc="formatDuration(state.data.slowest)"/>
+      </div>
+      <div t-att-class="state.data.overdue_count > 0 ? 'kds-db-card kds-db-card--warn-pulse' : 'kds-db-card kds-db-card--blue'">
+        <span class="kds-db-card__label">Đơn đang chờ hiện tại</span>
+        <span class="kds-db-card__value" t-esc="formatCount(state.data.waiting_count) + ' đơn'"/>
+      </div>
+      <div t-att-class="state.data.sla_rate &lt; 85 ? 'kds-db-card kds-db-card--red' : 'kds-db-card kds-db-card--green'">
+        <span class="kds-db-card__label">SLA bếp</span>
+        <span class="kds-db-card__value" t-esc="formatPercent(state.data.sla_rate)"/>
+      </div>
+      <div class="kds-db-card kds-db-card--purple">
+        <span class="kds-db-card__label">Hoàn thành trễ trong kỳ</span>
+        <span class="kds-db-card__value" t-esc="formatCount(state.data.late_done_count || 0) + ' đơn'"/>
+      </div>
+    </div>
+    <div class="kds-db-row">
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title kds-title--danger">Đơn đang chờ quá 5 phút <span class="kds-badge-danger" t-esc="state.data.overdue_count"/></h3>
+        <div t-if="!(state.data.overdue_orders || []).length" class="kds-db-stock-ok">Không có đơn đang chờ quá 5 phút</div>
+        <t t-foreach="state.data.overdue_orders || []" t-as="o" t-key="o.name">
+          <div class="kds-overdue-row">
+            <span class="kds-overdue-name" t-esc="o.name"/>
+            <span class="kds-overdue-type" t-esc="o.service_type === 'eat_in' ? 'Ăn tại chỗ' : 'Mang đi'"/>
+            <span class="kds-overdue-time" t-esc="formatDuration(o.waited)"/>
+          </div>
+        </t>
+      </div>
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Cơ cấu đơn hoàn thành</h3>
+        <div class="kds-db-type-stat">
+          <div class="kds-db-type-row"><span class="kds-db-dot kds-db-dot--green"/><span>Ăn tại chỗ</span><span class="kds-db-type-count" t-esc="formatCount(state.data.eat_in) + ' đơn'"/></div>
+          <div class="kds-db-type-row"><span class="kds-db-dot kds-db-dot--blue"/><span>Mang đi</span><span class="kds-db-type-count" t-esc="formatCount(state.data.take_out) + ' đơn'"/></div>
+        </div>
+        <h3 class="kds-db-panel__title" style="margin-top:16px" t-esc="state.data.peak_label_title || 'Giờ cao điểm'"/>
+        <t t-if="!(state.data.peak_hours || []).length"><div class="kds-db-empty">Chưa có dữ liệu</div></t>
+        <t t-foreach="state.data.peak_hours || []" t-as="hour" t-key="hour.label">
+          <div class="kds-db-list-row"><span t-esc="hour.display_label || hour.label"/><strong t-esc="formatCount(hour.orders) + ' đơn'"/></div>
+        </t>
+      </div>
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Món chế biến nhiều trong kỳ</h3>
+        <div t-if="!(state.data.top_items || []).length" class="kds-db-empty">Chưa có dữ liệu</div>
+        <t t-foreach="state.data.top_items || []" t-as="item" t-key="item.name">
+          <div class="kds-db-list-row"><span t-esc="item.name"/><strong t-esc="formatQty(item.qty) + ' món'"/></div>
+        </t>
+      </div>
+    </div>
+    <div class="kds-db-row">
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Tuổi đơn đang chờ</h3>
+        <t t-if="!(state.data.aging_buckets || []).length"><div class="kds-db-empty">Chưa có đơn đang chờ</div></t>
+        <t t-foreach="state.data.aging_buckets || []" t-as="bucket" t-key="bucket.label">
+          <div class="kds-aging-row">
+            <div class="kds-aging-row__head">
+              <span t-esc="bucket.label"/>
+              <strong t-esc="formatCount(bucket.count) + ' đơn'"/>
+            </div>
+            <div class="kds-aging-bar"><span t-att-style="'width:' + (bucket.pct || 0) + '%'"/></div>
+          </div>
+        </t>
+      </div>
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Món hoàn thành chậm trong kỳ</h3>
+        <div t-if="!(state.data.slow_products || []).length" class="kds-db-empty">Chưa có dữ liệu</div>
+        <t t-foreach="state.data.slow_products || []" t-as="item" t-key="item.name">
+          <div class="kds-slow-row">
+            <span t-esc="item.name"/>
+            <em t-esc="formatQty(item.qty) + ' món'"/>
+            <strong t-esc="formatDuration(item.avg_duration)"/>
+          </div>
+        </t>
+      </div>
+      <div class="kds-db-panel kds-insight-panel kds-insight-panel--inline">
+        <h3 class="kds-db-panel__title">Kitchen Insight</h3>
+        <div class="kds-insight-list">
+          <div t-foreach="state.data.insights || []"
+               t-as="insight"
+               t-key="insight.title"
+               t-att-class="'kds-insight-row kds-insight-row--' + (insight.type || 'info')">
+            <span>
+              <strong t-esc="insight.title"/>
+              <em t-esc="insight.body"/>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!--  EXPO  -->
+  <t t-if="!state.loading and state.view === 'expo' and state.data">
+    <div class="kds-db-section-title"> Bảng giao món - Phục vụ</div>
+    <div class="kds-db-cards kds-db-cards--6">
+      <div class="kds-db-card kds-db-card--orange"><span class="kds-db-card__label"> TG phục vụ TB</span><span class="kds-db-card__value" t-esc="formatDuration(state.data.avg_duration)"/></div>
+      <div class="kds-db-card kds-db-card--green"><span class="kds-db-card__label"> Nhanh nhất</span><span class="kds-db-card__value" t-esc="formatDuration(state.data.fastest)"/></div>
+      <div class="kds-db-card kds-db-card--red"><span class="kds-db-card__label"> Chậm nhất</span><span class="kds-db-card__value" t-esc="formatDuration(state.data.slowest)"/></div>
+      <div class="kds-db-card kds-db-card--blue"><span class="kds-db-card__label">Đơn chờ giao</span><span class="kds-db-card__value" t-esc="formatCount(state.data.waiting_count) + ' đơn'"/></div>
+      <div t-att-class="state.data.sla_rate &lt; 85 ? 'kds-db-card kds-db-card--red' : 'kds-db-card kds-db-card--green'"><span class="kds-db-card__label">SLA giao món</span><span class="kds-db-card__value" t-esc="formatPercent(state.data.sla_rate)"/></div>
+      <div class="kds-db-card kds-db-card--purple"><span class="kds-db-card__label">Handoff TB</span><span class="kds-db-card__value" t-esc="formatDuration(state.data.avg_handoff_delay)"/></div>
+    </div>
+    <div class="kds-db-row">
+      <div class="kds-db-panel kds-db-panel--wide">
+        <h3 class="kds-db-panel__title kds-title--danger"> đơn chưa giao quá 3 phút <span class="kds-badge-danger" t-esc="state.data.overdue_count"/></h3>
+        <div t-if="!(state.data.overdue_orders || []).length" class="kds-db-stock-ok"> Tất cả đơn đang xử lý đúng hạn</div>
+        <t t-foreach="state.data.overdue_orders || []" t-as="o" t-key="o.name">
+          <div class="kds-overdue-row">
+            <span class="kds-overdue-name" t-esc="o.name"/>
+            <span class="kds-overdue-type" t-esc="o.service_type === 'eat_in' ? 'Ăn tại chỗ' : 'Mang đi'"/>
+            <span class="kds-overdue-time kds-overdue-time--late" t-esc="formatDuration(o.waited)"/>
+          </div>
+        </t>
+      </div>
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Ăn tại chỗ / Mang đi</h3>
+        <div class="kds-db-type-stat">
+          <div class="kds-db-type-row"><span class="kds-db-dot kds-db-dot--green"/><span>Ăn tại chỗ</span><span class="kds-db-type-count" t-esc="formatCount(state.data.eat_in) + ' đơn'"/></div>
+          <div class="kds-db-type-row"><span class="kds-db-dot kds-db-dot--blue"/><span>Mang đi</span><span class="kds-db-type-count" t-esc="formatCount(state.data.take_out) + ' đơn'"/></div>
+        </div>
+        <div class="kds-db-mini" style="margin-top:16px">
+          <div><span>Đã giao trong kỳ</span><strong t-esc="formatCount(state.data.total_done) + ' đơn'"/></div>
+        </div>
+      </div>
+    </div>
+    <div class="kds-db-row">
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Order Aging</h3>
+        <t t-if="!(state.data.aging_buckets || []).length"><div class="kds-db-empty">Chưa có đơn chờ giao</div></t>
+        <t t-foreach="state.data.aging_buckets || []" t-as="bucket" t-key="bucket.label">
+          <div class="kds-aging-row">
+            <div class="kds-aging-row__head">
+              <span t-esc="bucket.label"/>
+              <strong t-esc="formatCount(bucket.count) + ' đơn'"/>
+            </div>
+            <div class="kds-aging-bar"><span t-att-style="'width:' + (bucket.pct || 0) + '%'"/></div>
+          </div>
+        </t>
+      </div>
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Món đã giao trễ</h3>
+        <div t-if="!(state.data.slow_products || []).length" class="kds-db-empty">Chưa có dữ liệu</div>
+        <t t-foreach="state.data.slow_products || []" t-as="item" t-key="item.name">
+          <div class="kds-slow-row">
+            <span t-esc="item.name"/>
+            <em t-esc="item.late_count + ' ln tr'"/>
+            <strong t-esc="formatDuration(item.avg_duration)"/>
+          </div>
+        </t>
+      </div>
+      <div class="kds-db-panel kds-insight-panel kds-insight-panel--inline">
+        <h3 class="kds-db-panel__title">Expo Insight</h3>
+        <div class="kds-insight-list">
+          <div t-foreach="state.data.insights || []"
+               t-as="insight"
+               t-key="insight.title"
+               t-att-class="'kds-insight-row kds-insight-row--' + (insight.type || 'info')">
+            <span>
+              <strong t-esc="insight.title"/>
+              <em t-esc="insight.body"/>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!--  SALES  -->
+  <t t-if="!state.loading and state.view === 'sales'">
+    <div class="kds-analytics-page">
+      <div class="kds-analytics-appbar">
+        <div class="kds-analytics-titleblock">
+          <span class="kds-analytics-kicker">Báo cáo tổng quan</span>
+          <h2>Phân tích đơn hàng</h2>
+          <span class="kds-analytics-date" t-esc="periodLabel()"/>
+        </div>
+        <div class="kds-analytics-search kds-sales-product-panel">
+          <span class="kds-analytics-search-label">Sản phẩm</span>
+          <div class="kds-product-search kds-sales-product-select">
+            <input class="kds-sales-product-input"
+                   placeholder="Tìm sản phẩm..."
+                   t-att-value="state.productSearchQuery || ''"
+                   t-on-input="(e) => this.onProductSearchInput(e.target.value)"
+                   t-on-focus="() => this.openProductSearch()"
+                   t-on-blur="() => this.closeProductSearch()"/>
+            <span class="kds-sales-product-caret"></span>
+            <div t-if="state.productSearchOpen" class="kds-product-search-dropdown kds-sales-product-dropdown">
+              <t t-set="matches" t-value="filteredProducts(state.productSearchQuery || '') || []"/>
+              <t t-if="state.productSearchLoading">
+                <div class="kds-product-empty">Đang tìm sản phẩm...</div>
+              </t>
+              <t t-if="!state.productSearchLoading and !matches.length">
+                <div class="kds-product-empty">Không tìm thấy sản phẩm</div>
+              </t>
+              <t t-foreach="matches" t-as="prod" t-key="prod.key || prod.id">
+                <div class="kds-product-option" t-on-mousedown="() => this.selectProductFromSearch(prod)">
+                  <span class="kds-product-name" t-esc="prod.name"/>
+                </div>
+              </t>
+              <div t-if="state.productSearchHasMore"
+                   class="kds-sales-product-more"
+                   t-on-mousedown="() => this.loadMoreProductSearch()">Xem thêm...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!--  PRODUCT DETAIL VIEW  -->
+    <t t-if="state.data and !state.selectedProduct">
+      <div class="kds-analytics-toolbar">
+        <div class="kds-analytics-metrics">
+          <button t-att-class="state.salesMetric === 'revenue' ? 'active' : ''"
+                  t-on-click="() => this.setSalesMetric('revenue')">Tổng giá</button>
+          <button t-att-class="state.salesMetric === 'qty' ? 'active' : ''"
+                  t-on-click="() => this.setSalesMetric('qty')">Số lượng</button>
+          <button t-att-class="state.salesMetric === 'order_count' ? 'active' : ''"
+                  t-on-click="() => this.setSalesMetric('order_count')">Số đơn</button>
+        </div>
+        <div class="kds-analytics-tools">
+          <button title="Biểu đồ cột"
+                  t-att-class="state.salesChartType === 'bar' ? 'active' : ''"
+                  t-on-click="() => this.setSalesChartType('bar')">Cột</button>
+          <button title="Biểu đồ đường"
+                  t-att-class="state.salesChartType === 'line' ? 'active' : ''"
+                  t-on-click="() => this.setSalesChartType('line')">Đường</button>
+          <button title="Biểu đồ tròn"
+                  t-att-class="state.salesChartType === 'pie' ? 'active' : ''"
+                  t-on-click="() => this.setSalesChartType('pie')">Tròn</button>
+          <button title="Đổi thứ tự"
+                  t-on-click="() => this.toggleSalesSort()">
+            <t t-esc="state.salesSort === 'desc' ? 'Giảm' : 'Tăng'"/>
+          </button>
+        </div>
+      </div>
+
+      <div class="kds-analytics-kpis">
+        <div t-att-class="'kds-analytics-kpi ' + (state.salesMetric === 'revenue' ? 'active' : '')">
+          <span>Doanh thu</span>
+          <strong t-esc="formatVND(state.data.total_revenue)"/>
+        </div>
+        <div t-att-class="'kds-analytics-kpi ' + (state.salesMetric === 'order_count' ? 'active' : '')">
+          <span>Số đơn hàng</span>
+          <strong t-esc="state.data.total_orders"/>
+        </div>
+        <div t-att-class="'kds-analytics-kpi ' + (state.salesMetric === 'qty' ? 'active' : '')">
+          <span>Số món bán</span>
+          <strong t-esc="formatQty(state.data.total_items) + ' món'"/>
+        </div>
+        <div class="kds-analytics-kpi">
+          <span>Giá trị đơn TB</span>
+          <strong t-esc="formatVND(state.data.avg_order_value)"/>
+        </div>
+      </div>
+
+      <div class="kds-report-grid kds-report-grid--analytics">
+        <div class="kds-report-panel kds-report-panel--dark">
+          <h3 class="kds-db-panel__title" t-esc="'So sánh ' + salesMetricLabel().toLowerCase()"/>
+          <div class="kds-comparison-grid">
+            <div t-att-class="'kds-comparison-card kds-comparison-card--' + comparisonTone((salesMetricComparison() || {}).growth)">
+              <span t-esc="salesMetricLabel()"/>
+              <strong t-esc="formatDelta((salesMetricComparison() || {}).delta || 0, salesMetricDeltaType())"/>
+              <em><t t-esc="formatTrend((salesMetricComparison() || {}).growth)"/> so với <t t-esc="state.data.comparison_label"/></em>
+            </div>
+          </div>
+        </div>
+        <div class="kds-report-panel kds-report-panel--dark">
+          <h3 class="kds-db-panel__title">Cơ cấu sản phẩm</h3>
+          <div class="kds-composition-summary">
+            <strong><t t-esc="salesCompositionSummary().topProduct"/>  <t t-esc="salesCompositionSummary().topProductShare"/>%</strong>
+            <span>Top 3 sản phẩm chiếm <t t-esc="salesCompositionSummary().top3Share"/>% theo <t t-esc="salesCompositionSummary().metricLabel"/></span>
+          </div>
+          <div class="kds-mini-insights">
+            <div t-foreach="state.data.statistical_insights || []" t-as="ins" t-key="ins.title">
+              <strong t-esc="ins.title"/>
+              <span t-esc="ins.body"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kds-analytics-grid">
+        <div class="kds-analytics-panel kds-analytics-panel--wide">
+          <div class="kds-analytics-panel-head">
+            <h3>Xu hướng bán hàng</h3>
+            <span t-esc="'Theo ' + salesMetricLabel().toLowerCase()"/>
+          </div>
+          <div class="kds-db-chart kds-analytics-main-chart"><canvas t-ref="salesMonthlyChart"/></div>
+        </div>
+        <div class="kds-analytics-panel kds-analytics-panel--wide">
+          <div class="kds-analytics-panel-head">
+            <h3>Sản phẩm nổi bật</h3>
+            <span t-esc="'Theo ' + salesMetricLabel().toLowerCase()"/>
+          </div>
+          <div class="kds-db-chart kds-analytics-product-chart"><canvas t-ref="salesProductChart"/></div>
+        </div>
+      </div>
+      <div t-if="state.chartSelection" class="kds-chart-drilldown kds-chart-drilldown--analytics">
+        <div class="kds-chart-drilldown__head">
+          <div>
+            <span class="kds-chart-drilldown__title" t-esc="state.chartSelection.title"/>
+            <strong class="kds-chart-drilldown__label" t-esc="state.chartSelection.label"/>
+          </div>
+          <strong class="kds-chart-drilldown__value" t-esc="state.chartSelection.displayValue"/>
+          <button type="button" class="kds-chart-drilldown__close" t-on-click="() => this.clearChartSelection()"></button>
+        </div>
+        <div t-if="(state.chartSelection.details || []).length" class="kds-chart-drilldown__metrics">
+          <div t-foreach="state.chartSelection.details || []" t-as="detail" t-key="detail.label" class="kds-chart-drilldown__metric">
+            <span t-esc="detail.label"/>
+            <strong t-esc="detail.value"/>
+          </div>
+        </div>
+        <div t-if="(state.chartSelection.items || []).length" class="kds-chart-drilldown__items">
+          <span class="kds-chart-drilldown__items-title" t-esc="state.chartSelection.itemsTitle || 'Chi tiết'"/>
+          <div t-foreach="state.chartSelection.items || []" t-as="item" t-key="item.name" class="kds-chart-drilldown__item">
+            <span t-esc="item.name"/>
+            <em t-esc="item.meta"/>
+            <strong t-esc="item.value"/>
+          </div>
+        </div>
+        <div t-if="state.chartSelection.hint" class="kds-chart-drilldown__hint" t-esc="state.chartSelection.hint"/>
+      </div>
+
+      <div class="kds-analytics-panel kds-analytics-table-panel">
+        <div class="kds-analytics-panel-head">
+        <h3>Sản phẩm bán chạy</h3>
+          <span>Bấm vào sản phẩm để xem chi tiết</span>
+        </div>
+        <div class="kds-analytics-product-table">
+          <div class="kds-analytics-product-row kds-analytics-product-row--head">
+            <span class="kds-analytics-product-name">Sản phẩm</span>
+            <span t-esc="salesMetricLabel()"/>
+            <span>Tỉ trọng</span>
+            <span>Doanh thu</span>
+          </div>
+          <t t-if="!(state.data.top_products || []).length">
+            <div class="kds-db-empty">Chưa có dữ liệu sản phẩm</div>
+          </t>
+          <t t-foreach="salesSortedProducts() || []" t-as="product" t-key="product.key || product.name">
+            <button type="button"
+                    class="kds-analytics-product-row"
+                    t-on-click="() => this.selectProductFromSearch(product)">
+              <span class="kds-analytics-product-name" t-esc="product.name"/>
+              <span t-esc="salesProductMetricValue(product)"/>
+              <span t-esc="salesProductShare(product) + '%'"/>
+              <strong t-esc="formatVND(product.revenue)"/>
+            </button>
+          </t>
+        </div>
+      </div>
+    </t>
+    </div>
+
+    <t t-if="state.selectedProduct">
+      <div class="kds-product-detail-section">
+        <div class="kds-product-detail-header">
+          <button class="kds-product-detail-back" t-on-click="() => this.closeProductDetail()">← Quay lại</button>
+          <div class="kds-product-detail-heading">
+            <span class="kds-product-detail-kicker">Chi tiết sản phẩm</span>
+            <h2 class="kds-product-detail-title" t-esc="state.selectedProduct.product_name"/>
+          </div>
+        </div>
+
+        <!-- OVERVIEW -->
+        <div class="kds-detail-group kds-detail-group--overview">
+          <h4 class="kds-detail-group-title">Tổng quan sản phẩm</h4>
+          <div class="kds-detail-cards">
+            <div class="kds-detail-card">
+              <span class="kds-detail-label">Doanh thu</span>
+              <strong class="kds-detail-value" t-esc="formatVND(state.selectedProduct.overview.revenue || 0)"/>
+            </div>
+            <div class="kds-detail-card">
+              <span class="kds-detail-label">Giá vốn BOM</span>
+              <strong class="kds-detail-value" t-esc="formatVND(state.selectedProduct.overview.cost || 0)"/>
+            </div>
+            <div class="kds-detail-card">
+              <span class="kds-detail-label">Lợi nhuận</span>
+              <strong class="kds-detail-value" t-esc="formatVND(state.selectedProduct.overview.profit || 0)"/>
+            </div>
+            <div class="kds-detail-card">
+              <span class="kds-detail-label">Tỷ suất LN</span>
+              <strong class="kds-detail-value" t-esc="state.selectedProduct.overview.profit_margin + '%'"/>
+            </div>
+            <div class="kds-detail-card">
+              <span class="kds-detail-label">Số lượng bán</span>
+              <strong class="kds-detail-value" t-esc="formatQty(state.selectedProduct.overview.total_qty) + ' món'"/>
+            </div>
+            <div class="kds-detail-card">
+              <span class="kds-detail-label">Số đơn có món</span>
+              <strong class="kds-detail-value" t-esc="formatCount(state.selectedProduct.overview.order_count || 0) + ' đơn'"/>
+            </div>
+            <div class="kds-detail-card">
+              <span class="kds-detail-label">DT/đơn có món</span>
+              <strong class="kds-detail-value" t-esc="formatVND(state.selectedProduct.overview.avg_revenue_per_order || 0)"/>
+            </div>
+            <div class="kds-detail-card">
+              <span class="kds-detail-label">Tỉ trọng DT</span>
+              <strong class="kds-detail-value" t-esc="(state.selectedProduct.overview.revenue_share || 0) + '%'"/>
+            </div>
+            <div class="kds-detail-card">
+              <span class="kds-detail-label">TB mỗi đơn</span>
+              <strong class="kds-detail-value" t-esc="formatQty(state.selectedProduct.overview.avg_qty_per_order || 0) + ' món'"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="kds-db-panel kds-insight-panel kds-insight-panel--inline">
+          <h3 class="kds-db-panel__title">Nhận xét sản phẩm</h3>
+          <div class="kds-insight-list">
+            <div t-foreach="state.selectedProduct.statistical_insights || []"
+                 t-as="ins"
+                 t-key="ins.title"
+                 t-att-class="'kds-insight-row kds-insight-row--' + (ins.type || 'info')">
+              <span>
+                <strong t-esc="ins.title"/>
+                <em t-esc="ins.body"/>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SALES TREND CHART -->
+        <div class="kds-product-detail-charts">
+          <div class="kds-detail-group kds-detail-group--chart kds-detail-group--main-chart">
+            <div class="kds-detail-group-head">
+              <h4 class="kds-detail-group-title">Xu hướng bán</h4>
+              <span class="kds-detail-group-subtitle">Số lượng bán trong kỳ báo cáo</span>
+            </div>
+            <div class="kds-db-chart"><canvas t-ref="productTrendChart"/></div>
+          </div>
+
+          <div class="kds-detail-group kds-detail-group--chart">
+            <div class="kds-detail-group-head">
+              <h4 class="kds-detail-group-title">Bán theo giờ</h4>
+              <span class="kds-detail-group-subtitle">Số lượng món theo từng khung giờ</span>
+            </div>
+            <div class="kds-db-chart"><canvas t-ref="productHourlyChart"/></div>
+          </div>
+        </div>
+        <div t-if="state.chartSelection" class="kds-chart-drilldown kds-chart-drilldown--detail">
+          <div class="kds-chart-drilldown__head">
+            <div>
+              <span class="kds-chart-drilldown__title" t-esc="state.chartSelection.title"/>
+              <strong class="kds-chart-drilldown__label" t-esc="state.chartSelection.label"/>
+            </div>
+            <strong class="kds-chart-drilldown__value" t-esc="state.chartSelection.displayValue"/>
+            <button type="button" class="kds-chart-drilldown__close" t-on-click="() => this.clearChartSelection()"></button>
+          </div>
+          <div t-if="(state.chartSelection.details || []).length" class="kds-chart-drilldown__metrics">
+            <div t-foreach="state.chartSelection.details || []" t-as="detail" t-key="detail.label" class="kds-chart-drilldown__metric">
+              <span t-esc="detail.label"/>
+              <strong t-esc="detail.value"/>
+            </div>
+          </div>
+          <div t-if="(state.chartSelection.items || []).length" class="kds-chart-drilldown__items">
+            <span class="kds-chart-drilldown__items-title" t-esc="state.chartSelection.itemsTitle || 'Chi tiết'"/>
+            <div t-foreach="state.chartSelection.items || []" t-as="item" t-key="item.name" class="kds-chart-drilldown__item">
+              <span t-esc="item.name"/>
+              <em t-esc="item.meta"/>
+              <strong t-esc="item.value"/>
+            </div>
+          </div>
+          <div t-if="state.chartSelection.hint" class="kds-chart-drilldown__hint" t-esc="state.chartSelection.hint"/>
+        </div>
+
+        <div class="kds-product-detail-grid-secondary">
+        <!-- INGREDIENTS -->
+        <div class="kds-detail-group">
+          <h4 class="kds-detail-group-title">Nguyên liệu theo BOM</h4>
+          <t t-if="!(state.selectedProduct.ingredients || []).length">
+            <div class="kds-db-empty">Chưa có công thức nguyên liệu</div>
+          </t>
+          <div t-foreach="state.selectedProduct.ingredients || []" t-as="ing" t-key="ing.name" class="kds-detail-row">
+            <span t-esc="ing.name"/>
+            <em><t t-esc="ing.qty"/> <t t-esc="ing.uom"/></em>
+            <strong><t t-esc="ing.share"/>%</strong>
+          </div>
+        </div>
+
+        <!-- PERFORMANCE -->
+        <div class="kds-detail-group">
+          <h4 class="kds-detail-group-title">Hiệu suất chế biến</h4>
+          <div class="kds-detail-info">
+            <span class="kds-info-label">Trung bình chế biến</span>
+            <strong class="kds-info-value" t-esc="(state.selectedProduct.performance.avg_cook_time / 60).toFixed(1) + ' phút'"/>
+          </div>
+        </div>
+
+        <!-- MODIFIERS -->
+        <div class="kds-detail-group">
+          <h4 class="kds-detail-group-title">Tùy chỉnh món</h4>
+          <t t-if="!(state.selectedProduct.modifiers || []).length">
+            <div class="kds-db-empty">Không có tùy chỉnh món</div>
+          </t>
+          <div t-foreach="state.selectedProduct.modifiers || []" t-as="mod" t-key="mod.modifier" class="kds-detail-row">
+            <span t-esc="mod.modifier"/>
+            <strong t-esc="mod.count + ' x'"/>
+          </div>
+        </div>
+
+        <!-- OFTEN BOUGHT TOGETHER -->
+        <div class="kds-detail-group">
+          <h4 class="kds-detail-group-title">Thường mua kèm</h4>
+          <t t-if="!(state.selectedProduct.often_bought_together || []).length">
+            <div class="kds-db-empty">Không có sản phẩm liên quan</div>
+          </t>
+          <div t-foreach="state.selectedProduct.often_bought_together || []" t-as="item" t-key="item.product" class="kds-detail-row">
+            <span t-esc="item.product"/>
+            <strong t-esc="item.count + ' x'"/>
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </t>
+  </t>
+
+  <!--  INVENTORY  -->
+  <t t-if="!state.loading and state.view === 'inventory' and state.data">
+    <div class="kds-db-section-title">Bảng kho - Quản lý nguyên liệu</div>
+    <div class="kds-db-cards kds-db-cards--3">
+      <div t-att-class="state.data.low_stock_count > 0 ? 'kds-db-card kds-db-card--warn-pulse' : 'kds-db-card kds-db-card--ok'">
+        <span class="kds-db-card__label">Nguyên liệu sắp hết</span>
+        <span class="kds-db-card__value" t-esc="state.data.low_stock_count > 0 ? state.data.low_stock_count + ' mặt hàng' : 'Đủ hàng'"/>
+      </div>
+      <div t-att-class="(state.data.reorder_suggestions || []).length ? 'kds-db-card kds-db-card--blue' : 'kds-db-card kds-db-card--muted'">
+        <span class="kds-db-card__label">Gợi ý nhập hàng</span>
+        <span class="kds-db-card__value" t-esc="(state.data.reorder_suggestions || []).length ? (state.data.reorder_suggestions || []).length + ' mặt hàng' : 'Chưa cần nhập'"/>
+      </div>
+      <div class="kds-db-card kds-db-card--green">
+        <span class="kds-db-card__label">Nguyên liệu tiêu hao cao nhất</span>
+        <span class="kds-db-card__value" t-esc="(state.data.top_sold || []).length ? state.data.top_sold[0].name + '  ' + (state.data.top_sold[0].usage_share || 0) + '%' : ''"/>
+      </div>
+    </div>
+    <div class="kds-report-grid">
+      <div class="kds-report-panel">
+        <h3 class="kds-db-panel__title"> Cơ cấu tiêu hao kho</h3>
+        <div class="kds-composition-summary">
+          <strong><t t-esc="state.data.composition.top_material || ''"/>  <t t-esc="state.data.composition.top_material_share || 0"/>%</strong>
+          <span>Top 3 nguyên liệu chiếm <t t-esc="state.data.composition.top3_usage_share || 0"/>% giá trị tiêu hao</span>
+        </div>
+      </div>
+      <div class="kds-report-panel">
+        <h3 class="kds-db-panel__title">Nhận xét kho</h3>
+        <div class="kds-mini-insights">
+          <div t-foreach="state.data.statistical_insights || []" t-as="ins" t-key="ins.title">
+            <strong t-esc="ins.title"/>
+            <span t-esc="ins.body"/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="kds-db-row">
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Nguyên liệu gần hết</h3>
+        <div t-if="!(state.data.low_stock || []).length" class="kds-db-stock-ok">Tất cả nguyên liệu đủ hàng</div>
+        <t t-foreach="state.data.low_stock" t-as="item" t-key="item.name">
+          <button type="button"
+                  t-att-class="'kds-db-stock-row kds-db-stock-row--' + item.urgency + (state.selectedReorderProductId === item.product_id ? ' active' : '')"
+                  t-on-click="() => this.selectInventorySuggestion(item)">
+            <span class="kds-db-stock-dot"/>
+            <span class="kds-db-stock-name" t-esc="item.name"/>
+            <div class="kds-stock-progress"><div class="kds-stock-bar" t-att-style="'width:' + item.pct + '%'"/></div>
+            <span class="kds-db-stock-qty"><t t-esc="formatQty(item.qty_on_hand)"/>/<t t-esc="formatQty(item.min_qty)"/> <t t-esc="item.uom"/></span>
+          </button>
+        </t>
+      </div>
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Gợi ý nhập thêm</h3>
+        <div t-if="!(state.data.reorder_suggestions || []).length" class="kds-inventory-empty">
+          <strong>Nguyên liệu đang ổn</strong>
+          <span>Chưa có nguyên liệu nào thấp hơn định mức cần nhập thêm.</span>
+        </div>
+        <t t-foreach="state.data.reorder_suggestions" t-as="item" t-key="item.name">
+          <div t-att-class="'kds-reorder-row' + (state.selectedReorderProductId === item.product_id ? ' active' : '')">
+            <button type="button" class="kds-reorder-main" t-on-click="() => this.selectInventorySuggestion(item)">
+              <strong t-esc="item.name"/>
+              <span>
+                Tồn hiện tại: <t t-esc="formatQty(item.qty_on_hand)"/>/<t t-esc="formatQty(item.min_qty)"/> <t t-esc="item.uom"/>
+              </span>
+              <em t-if="item.vendor_name">Nhà cung cấp: <t t-esc="item.vendor_name"/></em>
+              <em t-if="!item.vendor_name" class="kds-reorder-warning">Chưa có nhà cung cấp</em>
+            </button>
+            <div class="kds-reorder-qty">
+              <span>Gợi ý nhập</span>
+              <strong><t t-esc="item.suggest_qty"/> <t t-esc="item.uom"/></strong>
+            </div>
+            <button t-if="item.can_create_po"
+                    type="button"
+                    class="kds-reorder-action"
+                    t-att-disabled="state.purchaseCreatingProductId === item.product_id"
+                    t-on-click="(ev) => this.createPurchaseOrder(item, ev)">
+              <t t-if="state.purchaseCreatingProductId === item.product_id">Đang tạo...</t>
+              <t t-if="state.purchaseCreatingProductId !== item.product_id">Tạo đơn mua hàng</t>
+            </button>
+            <button t-if="!item.can_create_po"
+                    type="button"
+                    class="kds-reorder-action kds-reorder-action--secondary"
+                    t-on-click="(ev) => this.openInventoryProduct(item, ev)">
+              Mở sản phẩm
+            </button>
+          </div>
+        </t>
+      </div>
+      <div class="kds-db-panel">
+        <h3 class="kds-db-panel__title">Tỷ trọng tiêu hao nguyên liệu</h3>
+        <div t-if="!(state.data.top_sold || []).length" class="kds-db-empty">Chưa có dữ liệu</div>
+        <div t-if="(state.data.top_sold || []).length" class="kds-db-chart kds-inventory-ingredient-chart">
+          <canvas t-ref="inventoryIngredientChart"/>
+        </div>
+        <t t-foreach="state.data.top_sold" t-as="item" t-key="item.name">
+          <div class="kds-inventory-usage-row">
+            <div class="kds-inventory-usage-head">
+              <span class="kds-inventory-rank">#<t t-esc="item_index + 1"/></span>
+              <strong t-esc="item.name"/>
+              <em><t t-esc="item.usage_share || 0"/>%</em>
+            </div>
+            <div class="kds-inventory-share-track">
+              <div class="kds-inventory-share-fill" t-att-style="'width:' + (item.usage_share || 0) + '%'"/>
+            </div>
+            <div class="kds-inventory-usage-meta">
+              <span><t t-esc="this.formatVND(item.usage_value || 0)"/></span>
+              <span><t t-esc="formatMeasure(item.qty, item.uom || 'đơn vị')"/></span>
+            </div>
+          </div>
+        </t>
+      </div>
+    </div>
+    <div class="kds-waste-shortcut">
+      <button class="kds-waste-btn" t-on-click="() => this.setView('waste')">Vào quản lý hàng hủy</button>
+    </div>
+  </t>
+
+  <!--  WASTE  -->
+  <t t-if="!state.loading and state.view === 'waste'">
+    <div class="kds-db-section-title">Quản lý hàng hủy</div>
+    <div class="kds-waste-tabs">
+      <button t-on-click="() => this.setWasteTab('entry')"  t-att-class="state.wasteTab==='entry'  ? 'kds-waste-tab active' : 'kds-waste-tab'">Ghi nhận hàng hủy</button>
+      <button t-on-click="() => this.setWasteTab('report')" t-att-class="state.wasteTab==='report' ? 'kds-waste-tab active' : 'kds-waste-tab'">Báo cáo hàng hủy</button>
+    </div>
+
+    <!-- WASTE ENTRY FORM -->
+    <t t-if="state.wasteTab === 'entry'">
+      <div class="kds-waste-form-wrap">
+        <div class="kds-waste-form-header">
+          <h3>Ghi nhận hàng hủy cuối ngày</h3>
+          <div class="kds-waste-meta">
+            <label class="kds-waste-date">
+              <span>Ngày ghi nhận</span>
+              <input type="date"
+                     class="kds-input"
+                     t-att-value="state.wasteDate"
+                     t-att-max="todayDate()"
+                     t-on-change="(e) => this.setWasteDate(e.target.value)"/>
+            </label>
+            <span class="kds-waste-user">Nhân viên: <strong t-esc="state.currentUser"/></span>
+          </div>
+        </div>
+
+        <div class="kds-waste-entries">
+          <t t-foreach="state.wasteEntries" t-as="entry" t-key="entry_index">
+            <div class="kds-waste-entry-row">
+
+              <!-- PRODUCT DROPDOWN -->
+              <div class="kds-waste-field kds-waste-field--product">
+                <label>NGUYÊN LIỆU (từ kho)</label>
+                <div class="kds-product-select">
+                  <input type="text"
+                         class="kds-input"
+                         t-att-value="entry.search || entry.product_name"
+                         placeholder="Tìm nguyên liệu..."
+                         t-on-input="(e) => this.onSearchInput(entry_index, e.target.value)"
+                         t-on-focus="() => this.openDropdown(entry_index)"
+                         t-on-blur="() => this.closeDropdown(entry_index)"
+                  />
+                  <t t-if="state.inventoryProducts.length === 0">
+                    <div class="kds-product-hint"> Chưa có orderpoint trong kho</div>
+                  </t>
+                  <div t-if="state.dropdownOpen[entry_index]" class="kds-product-dropdown">
+                    <t t-set="filtered" t-value="filteredInventoryProducts(entry.search)"/>
+                    <div t-if="!filtered.length" class="kds-product-empty">Không tìm thấy nguyên liệu</div>
+                    <t t-foreach="filtered.slice(0,12)" t-as="prod" t-key="prod.id">
+                      <div t-att-class="'kds-product-option' + (prod.low ? ' kds-product-option--low' : '')"
+                           t-on-mousedown="() => this.selectProduct(entry_index, prod)">
+                        <span class="kds-product-name" t-esc="prod.name"/>
+                        <span class="kds-product-stock">
+                          <t t-if="prod.low"> </t>
+                          <t t-esc="formatQty(prod.qty_on_hand)"/> <t t-esc="prod.uom"/>
+                        </span>
+                      </div>
+                    </t>
+                  </div>
+                </div>
+              </div>
+
+              <div class="kds-waste-field kds-waste-field--sm">
+                <label>SỐ LƯỢNG</label>
+                <input type="number" class="kds-input" min="0.1" step="0.1"
+                       t-att-value="entry.qty"
+                       t-on-input="(e) => this.updateEntry(entry_index, 'qty', parseFloat(e.target.value) || 1)"/>
+              </div>
+
+              <div class="kds-waste-field">
+                <label>LÝ DO HỦY</label>
+                <select class="kds-input kds-select"
+                        t-on-change="(e) => this.updateEntry(entry_index, 'reason', e.target.value)">
+                  <option value="expired">Hết hạn</option>
+                  <option value="wrong_order">Làm sai đơn</option>
+                  <option value="dropped">Rơi vỡ</option>
+                  <option value="cancelled">Khách hủy</option>
+                  <option value="cooking_error">Hỏng chế biến</option>
+                  <option value="other">Khác</option>
+                </select>
+              </div>
+
+              <div class="kds-waste-field">
+                <label>GHI CHÚ</label>
+                <input type="text" class="kds-input"
+                       t-att-value="entry.note"
+                       t-on-input="(e) => this.updateEntry(entry_index, 'note', e.target.value)"
+                       placeholder="Ghi chú thêm..."/>
+              </div>
+
+              <button class="kds-waste-remove" t-on-click="() => this.removeEntry(entry_index)"></button>
+            </div>
+          </t>
+        </div>
+
+        <div class="kds-waste-actions">
+          <button class="kds-btn-add" t-on-click="this.addEntry">+ Thêm dòng</button>
+          <button class="kds-btn-submit" t-att-disabled="state.submitting" t-on-click="this.submitWaste">
+            <t t-if="state.submitting"><i class="fa fa-spinner fa-spin"/> Đang lưu...</t>
+            <t t-else="">Lưu phiếu hàng hủy</t>
+          </button>
+        </div>
+        <div t-if="state.wasteSuccess" class="kds-waste-success">Đã lưu thành công <strong t-esc="state.wasteSuccess + ' dòng'"/> hàng hủy và trừ kho.</div>
+        <div t-if="state.wasteError"   class="kds-db-error" t-esc="state.wasteError"/>
+      </div>
+    </t>
+
+    <!-- WASTE REPORT -->
+    <t t-if="state.wasteTab === 'report' and state.wasteReport">
+      <div class="kds-db-cards kds-db-cards--4">
+        <div class="kds-db-card kds-db-card--red"><span class="kds-db-card__label">Tổng hàng hủy</span><span class="kds-db-card__value" t-esc="formatWasteQty(state.wasteReport.total_qty) + ' đv'"/></div>
+        <div class="kds-db-card kds-db-card--orange"><span class="kds-db-card__label">Tổng thất thoát</span><span class="kds-db-card__value" t-esc="formatVND(state.wasteReport.total_loss)"/></div>
+        <div class="kds-db-card kds-db-card--purple"><span class="kds-db-card__label"> Lý do nhiều nhất</span><span class="kds-db-card__value" t-esc="state.wasteReport.top_reason"/></div>
+        <div class="kds-db-card kds-db-card--blue"><span class="kds-db-card__label">NL hủy nhiều nhất</span><span class="kds-db-card__value" t-esc="state.wasteReport.top_product"/></div>
+      </div>
+      <div class="kds-report-grid">
+        <div class="kds-report-panel">
+          <h3 class="kds-db-panel__title">So sánh hàng hủy</h3>
+          <div class="kds-comparison-grid">
+            <div t-att-class="'kds-comparison-card kds-comparison-card--' + comparisonTone((state.wasteReport.comparison.qty || {}).growth)">
+              <span>Số lượng hủy</span>
+              <strong t-esc="formatDelta((state.wasteReport.comparison.qty || {}).delta || 0, 'wasteQty')"/>
+              <em><t t-esc="formatTrend((state.wasteReport.comparison.qty || {}).growth)"/> so với <t t-esc="state.wasteReport.comparison_label"/></em>
+            </div>
+            <div t-att-class="'kds-comparison-card kds-comparison-card--' + comparisonTone((state.wasteReport.comparison.loss || {}).growth)">
+              <span>Giá trị thất thoát</span>
+              <strong t-esc="formatDelta((state.wasteReport.comparison.loss || {}).delta || 0, 'money')"/>
+              <em><t t-esc="formatTrend((state.wasteReport.comparison.loss || {}).growth)"/> so với <t t-esc="state.wasteReport.comparison_label"/></em>
+            </div>
+          </div>
+        </div>
+        <div class="kds-report-panel">
+          <h3 class="kds-db-panel__title"> Nhận xét hàng hủy</h3>
+          <div class="kds-mini-insights">
+            <div t-foreach="state.wasteReport.statistical_insights || []" t-as="ins" t-key="ins.title">
+              <strong t-esc="ins.title"/>
+              <span t-esc="ins.body"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="kds-db-row">
+        <div class="kds-db-panel">
+          <h3 class="kds-db-panel__title">Hàng hủy theo lý do</h3>
+          <div class="kds-db-chart"><canvas t-ref="wasteReasonChart"/></div>
+        </div>
+        <div class="kds-db-panel">
+          <h3 class="kds-db-panel__title">Nguyên liệu bị hủy nhiều nhất</h3>
+          <div t-if="!(state.wasteReport.by_product || []).length" class="kds-db-empty">Chưa có dữ liệu</div>
+          <t t-foreach="state.wasteReport.by_product || []" t-as="item" t-key="item.name">
+            <div class="kds-db-list-row kds-waste-product-row">
+              <span t-esc="item.name"/>
+              <span t-esc="formatWasteQty(item.qty) + ' đv'"/>
+              <strong t-esc="formatVND(item.loss)"/>
+            </div>
+          </t>
+        </div>
+      </div>
+      <div t-if="state.chartSelection" class="kds-chart-drilldown">
+        <div class="kds-chart-drilldown__head">
+          <div>
+            <span class="kds-chart-drilldown__title" t-esc="state.chartSelection.title"/>
+            <strong class="kds-chart-drilldown__label" t-esc="state.chartSelection.label"/>
+          </div>
+          <strong class="kds-chart-drilldown__value" t-esc="state.chartSelection.displayValue"/>
+          <button type="button" class="kds-chart-drilldown__close" t-on-click="() => this.clearChartSelection()"></button>
+        </div>
+        <div t-if="(state.chartSelection.details || []).length" class="kds-chart-drilldown__metrics">
+          <div t-foreach="state.chartSelection.details || []" t-as="detail" t-key="detail.label" class="kds-chart-drilldown__metric">
+            <span t-esc="detail.label"/>
+            <strong t-esc="detail.value"/>
+          </div>
+        </div>
+        <div t-if="(state.chartSelection.items || []).length" class="kds-chart-drilldown__items">
+          <span class="kds-chart-drilldown__items-title" t-esc="state.chartSelection.itemsTitle || 'Chi tiết'"/>
+          <div t-foreach="state.chartSelection.items || []" t-as="item" t-key="item.name" class="kds-chart-drilldown__item">
+            <span t-esc="item.name"/>
+            <em t-esc="item.meta"/>
+            <strong t-esc="item.value"/>
+          </div>
+        </div>
+        <div t-if="state.chartSelection.hint" class="kds-chart-drilldown__hint" t-esc="state.chartSelection.hint"/>
+      </div>
+    </t>
+  </t>
+
+</div>
+</div>
+</t>
+</templates>
+
+
+

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Sequence -->
+    <record id="seq_kiosk_order" model="ir.sequence">
+        <field name="name">Kiosk Order</field>
+        <field name="code">mcd.kiosk.order</field>
+        <field name="prefix">KIOSK/</field>
+        <field name="padding">4</field>
+    </record>
+
+    <!-- Action mở Kiosk -->
+    <record id="action_open_kiosk" model="ir.actions.act_url">
+        <field name="name">Mở Kiosk</field>
+        <field name="url">/kiosk</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_kiosk_root"
+        name="Kiosk"
+        sequence="50"
+        web_icon="mcd_kiosk,static/src/img/icon.png"/>
+
+    <menuitem id="menu_kiosk_open"
+        name="Mở Kiosk"
+        parent="menu_kiosk_root"
+        action="action_open_kiosk"
+        sequence="1"/>
+
+    <!-- Kiosk Orders list view -->
+    <record id="view_kiosk_order_tree" model="ir.ui.view">
+        <field name="name">mcd.kiosk.order.tree</field>
+        <field name="model">mcd.kiosk.order</field>
+        <field name="arch" type="xml">
+            <tree string="Kiosk Orders">
+                <field name="name"/>
+                <field name="pos_order_id"/>
+                <field name="partner_id"/>
+                <field name="service_type"/>
+                <field name="payment_method"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_kiosk_orders" model="ir.actions.act_window">
+        <field name="name">Kiosk Orders</field>
+        <field name="res_model">mcd.kiosk.order</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_kiosk_orders"
+        name="Đơn Kiosk"
+        parent="menu_kiosk_root"
+        action="action_kiosk_orders"
+        sequence="2"/>
+
+    <!-- Kiosk Page template -->
+    <template id="kiosk_page" name="Kiosk Page">
+        <t t-call="web.layout">
+            <t t-set="head">
+                <link rel="stylesheet" href="/mcd_kiosk/static/src/css/kiosk.css"/>
+                <title>McDonald's Kiosk</title>
+                <style>
+                    body { margin: 0; padding: 0; overflow: hidden; }
+                    #kiosk-app { width: 100vw; height: 100vh; }
+                </style>
+            </t>
+            <t t-set="body_classname">kiosk-body</t>
+            <div id="kiosk-app"></div>
+            <script src="/mcd_kiosk/static/src/js/kiosk.js" type="text/javascript"/>
+        </t>
+    </template>
+
+</odoo>

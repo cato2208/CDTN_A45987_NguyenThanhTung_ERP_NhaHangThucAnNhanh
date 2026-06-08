@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="mcd_backend_theme.NavBar.AppsMenu" t-inherit="web.NavBar.AppsMenu" t-inherit-mode="extension">
+        <xpath expr="//Dropdown" position="replace">
+            <button
+                type="button"
+                class="dropdown-toggle o_mcd_home_button"
+                title="Trang chủ"
+                t-on-click.stop="openMcdHome"
+            >
+                <i class="oi oi-apps"/>
+            </button>
+        </xpath>
+    </t>
+</templates>

@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mcd_kiosk_order,mcd.kiosk.order,model_mcd_kiosk_order,,1,1,1,1
+access_mcd_kiosk_order_line,mcd.kiosk.order.line,model_mcd_kiosk_order_line,,1,1,1,1

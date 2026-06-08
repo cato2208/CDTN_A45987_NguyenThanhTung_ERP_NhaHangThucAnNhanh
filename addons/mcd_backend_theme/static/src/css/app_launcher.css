@@ -1,0 +1,502 @@
+:root {
+    --mcd-red: #c91512;
+    --mcd-red-dark: #8f130d;
+    --mcd-yellow: #ffc72c;
+    --mcd-ink: #21130e;
+    --mcd-brown: #4a2115;
+    --mcd-cream: #fff4e6;
+    --mcd-card: #fffaf3;
+    --mcd-muted: #72594d;
+    --mcd-line: #ead7c5;
+}
+
+.o_mcd_home_button {
+    color: inherit;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar,
+body:not(.o_mcd_home_active) .o_navbar {
+    --NavBar-entry-color: #fff;
+    --NavBar-entry-color--active: #fff;
+    --NavBar-brand-color: #fff;
+    --NavBar-entry-backgroundColor: var(--mcd-red);
+    --NavBar-entry-backgroundColor--hover: var(--mcd-red-dark);
+    --NavBar-entry-backgroundColor--focus: var(--mcd-red-dark);
+    --NavBar-entry-backgroundColor--active: var(--mcd-red-dark);
+    background: var(--mcd-red) !important;
+    border-bottom: 1px solid rgba(75, 36, 23, 0.26) !important;
+    box-shadow: 0 2px 10px rgba(36, 16, 10, 0.18) !important;
+    color: #fff !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_brand,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections a,
+body:not(.o_mcd_home_active) .o_main_navbar .dropdown-toggle,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_brand,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections a,
+body:not(.o_mcd_home_active) .o_navbar .dropdown-toggle {
+    color: #fff !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections {
+    background: var(--mcd-red) !important;
+    background-color: var(--mcd-red) !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .o_nav_entry,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .dropdown-toggle,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections a,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .o_nav_entry,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .dropdown-toggle,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections a {
+    background: var(--mcd-red) !important;
+    background-color: var(--mcd-red) !important;
+    color: #fff !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections a:hover,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .o_nav_entry:hover,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .dropdown-toggle:hover,
+body:not(.o_mcd_home_active) .o_main_navbar .dropdown-toggle:hover,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections a:hover,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .o_nav_entry:hover,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .dropdown-toggle:hover,
+body:not(.o_mcd_home_active) .o_navbar .dropdown-toggle:hover {
+    background-color: var(--mcd-red-dark) !important;
+    color: #fff !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections a.active,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections a.show,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .dropdown-toggle.show,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .o_nav_entry.active,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections button.active,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .show > a,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections a.active,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections a.show,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .dropdown-toggle.show,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .o_nav_entry.active,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections button.active,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .show > a {
+    background: var(--mcd-red-dark) !important;
+    background-color: var(--mcd-red-dark) !important;
+    color: #fff !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_systray > * > a,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_systray > * > button,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_systray > * > a,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_systray > * > button {
+    color: #fff !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .dropdown-menu,
+body:not(.o_mcd_home_active) .o_navbar .dropdown-menu {
+    background: #fffaf3 !important;
+    color: var(--mcd-ink) !important;
+    border: 1px solid rgba(74, 33, 21, 0.14) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 14px 30px rgba(33, 19, 14, 0.18) !important;
+    padding: 8px !important;
+    min-width: 230px;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .dropdown-menu .dropdown-item,
+body:not(.o_mcd_home_active) .o_main_navbar .dropdown-menu a,
+body:not(.o_mcd_home_active) .o_navbar .dropdown-menu .dropdown-item,
+body:not(.o_mcd_home_active) .o_navbar .dropdown-menu a {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: var(--mcd-ink) !important;
+    border-radius: 7px !important;
+    line-height: 1.25 !important;
+    padding: 8px 12px !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .dropdown-menu .dropdown-item:hover,
+body:not(.o_mcd_home_active) .o_main_navbar .dropdown-menu a:hover,
+body:not(.o_mcd_home_active) .o_navbar .dropdown-menu .dropdown-item:hover,
+body:not(.o_mcd_home_active) .o_navbar .dropdown-menu a:hover {
+    background: #fff1c2 !important;
+    background-color: #fff1c2 !important;
+    color: var(--mcd-red-dark) !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .dropdown-menu .dropdown-header,
+body:not(.o_mcd_home_active) .o_main_navbar .dropdown-menu h6,
+body:not(.o_mcd_home_active) .o_navbar .dropdown-menu .dropdown-header,
+body:not(.o_mcd_home_active) .o_navbar .dropdown-menu h6 {
+    background: transparent !important;
+    color: #7a6a61 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    padding: 8px 12px 4px !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .dropdown-menu a,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .dropdown-menu .dropdown-item,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .dropdown-menu a,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .dropdown-menu .dropdown-item {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: var(--mcd-ink) !important;
+}
+
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .dropdown-menu a:hover,
+body:not(.o_mcd_home_active) .o_main_navbar .o_menu_sections .dropdown-menu .dropdown-item:hover,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .dropdown-menu a:hover,
+body:not(.o_mcd_home_active) .o_navbar .o_menu_sections .dropdown-menu .dropdown-item:hover {
+    background: #fff1c2 !important;
+    background-color: #fff1c2 !important;
+    color: var(--mcd-red-dark) !important;
+}
+
+body.o_mcd_home_active .o_navbar .o_menu_brand,
+body.o_mcd_home_active .o_navbar .o_menu_sections,
+body.o_mcd_home_active .o_mcd_home_button,
+body.o_mcd_home_active .o_navbar_apps_menu {
+    display: none !important;
+}
+
+body.o_mcd_home_active {
+    --o-navbar-background: transparent;
+    --o-navbar-border-color: transparent;
+}
+
+body.o_mcd_home_active .o_navbar,
+body.o_mcd_home_active .o_main_navbar {
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 20;
+    background: transparent !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+.o_action_manager:has(.o_mcd_home) {
+    overflow: hidden;
+}
+
+.o_mcd_home {
+    position: relative;
+    isolation: isolate;
+    height: 100%;
+    min-height: calc(100vh - var(--o-navbar-height, 46px));
+    padding: clamp(64px, 7.5vh, 92px) clamp(24px, 6vw, 88px) 56px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--mcd-ink);
+    background:
+        linear-gradient(180deg, rgba(201, 21, 18, 0.98) 0, rgba(201, 21, 18, 0.98) 300px, #f7ecdf 300px, #f7ecdf 100%);
+}
+
+.o_mcd_home::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: -2;
+    height: 330px;
+    background-image:
+        linear-gradient(rgba(255, 244, 230, 0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 244, 230, 0.10) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.70), transparent 100%);
+}
+
+.o_mcd_home::after {
+    content: "";
+    position: fixed;
+    right: -170px;
+    bottom: -190px;
+    z-index: -1;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    border: 86px solid rgba(255, 199, 44, 0.24);
+    pointer-events: none;
+}
+
+.o_mcd_home_header {
+    max-width: 1200px;
+    margin: 0 auto clamp(26px, 3.5vh, 38px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.o_mcd_home_brand {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 20px;
+}
+
+.o_mcd_home_mark {
+    flex: 0 0 auto;
+    width: 74px;
+    height: 74px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #b8120f;
+    box-shadow: 0 16px 30px rgba(36, 16, 10, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.o_mcd_home_mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.o_mcd_home_kicker {
+    margin: 0 0 8px;
+    color: var(--mcd-yellow);
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.o_mcd_home h1 {
+    margin: 0 0 12px;
+    color: #fff;
+    font-size: clamp(42px, 4.4vw, 64px);
+    font-weight: 900;
+    line-height: 1.02;
+    text-shadow: 0 3px 0 rgba(75, 36, 23, 0.32);
+}
+
+.o_mcd_home p {
+    margin: 0;
+    max-width: 640px;
+    color: rgba(255, 248, 225, 0.92);
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.o_mcd_home_badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.o_mcd_home_badges button {
+    min-width: 64px;
+    padding: 12px 17px;
+    border: 1px solid rgba(255, 248, 225, 0.48);
+    border-radius: 999px;
+    background: rgba(74, 33, 21, 0.22);
+    color: #fff;
+    font-weight: 900;
+    line-height: 1;
+    transition: transform 0.16s ease, background-color 0.16s ease, border-color 0.16s ease;
+}
+
+.o_mcd_home_badges button:hover,
+.o_mcd_home_badges button:focus {
+    border-color: var(--mcd-yellow);
+    background: var(--mcd-yellow);
+    color: var(--mcd-ink);
+    transform: translateY(-2px);
+}
+
+.o_mcd_home_grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 16px;
+}
+
+.o_mcd_home_app {
+    --app-accent: var(--mcd-red);
+    --app-icon-bg: var(--mcd-red);
+    --app-icon-color: #fff;
+    position: relative;
+    min-height: 132px;
+    padding: 22px 54px 22px 22px;
+    display: grid;
+    grid-template-columns: 60px minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+    overflow: hidden;
+    border: 1px solid var(--mcd-line);
+    border-radius: 8px;
+    background: rgba(255, 250, 243, 0.98);
+    box-shadow: 0 14px 28px rgba(75, 36, 23, 0.11);
+    color: var(--mcd-ink);
+    text-align: left;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
+}
+
+.o_mcd_home_app::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: var(--app-accent);
+}
+
+.o_mcd_home_app::after {
+    content: "";
+    position: absolute;
+    right: -50px;
+    bottom: -58px;
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--app-accent) 14%, transparent);
+    pointer-events: none;
+}
+
+.o_mcd_home_app:hover,
+.o_mcd_home_app:focus {
+    border-color: var(--mcd-yellow);
+    background: #fff;
+    box-shadow: 0 20px 36px rgba(75, 36, 23, 0.18);
+    transform: translateY(-2px);
+}
+
+.o_mcd_home_app_icon {
+    position: relative;
+    z-index: 1;
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--app-icon-bg);
+    color: var(--app-icon-color);
+    box-shadow: 0 10px 18px rgba(36, 16, 10, 0.14);
+}
+
+.o_mcd_home_app_icon i {
+    font-size: 26px;
+}
+
+.o_mcd_home_app_body {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+}
+
+.o_mcd_home_app_name {
+    color: var(--mcd-ink);
+    font-size: 19px;
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+.o_mcd_home_app_desc {
+    color: var(--mcd-muted);
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.o_mcd_home_app_arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: rgba(74, 33, 21, 0.08);
+    color: var(--mcd-brown);
+    transform: translateY(-50%);
+    transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+.o_mcd_home_app:hover .o_mcd_home_app_arrow,
+.o_mcd_home_app:focus .o_mcd_home_app_arrow {
+    background: var(--mcd-yellow);
+    color: var(--mcd-ink);
+    transform: translate(3px, -50%);
+}
+
+.o_mcd_home_app_analytics,
+.o_mcd_home_app_kiosk,
+.o_mcd_home_app_kitchen,
+.o_mcd_home_app_expo {
+    --app-accent: var(--mcd-red);
+    --app-icon-bg: var(--mcd-red);
+    --app-icon-color: #fff;
+}
+
+.o_mcd_home_app_sales,
+.o_mcd_home_app_customer,
+.o_mcd_home_app_invoice {
+    --app-accent: var(--mcd-yellow);
+    --app-icon-bg: var(--mcd-yellow);
+    --app-icon-color: var(--mcd-red-dark);
+}
+
+.o_mcd_home_app_stock,
+.o_mcd_home_app_purchase,
+.o_mcd_home_app_settings {
+    --app-accent: var(--mcd-brown);
+    --app-icon-bg: var(--mcd-brown);
+    --app-icon-color: var(--mcd-yellow);
+}
+
+.o_mcd_home_app_people,
+.o_mcd_home_app_default {
+    --app-accent: #6b3a2a;
+    --app-icon-bg: #6b3a2a;
+    --app-icon-color: #fff;
+}
+
+@media (max-width: 900px) {
+    .o_mcd_home_header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .o_mcd_home_badges {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 620px) {
+    .o_mcd_home {
+        padding: 28px 16px 36px;
+    }
+
+    .o_mcd_home_brand {
+        align-items: flex-start;
+    }
+
+    .o_mcd_home_mark {
+        width: 62px;
+        height: 62px;
+        border-radius: 14px;
+    }
+
+    .o_mcd_home h1 {
+        font-size: 34px;
+    }
+
+    .o_mcd_home p {
+        font-size: 15px;
+    }
+
+    .o_mcd_home_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .o_mcd_home_app {
+        min-height: 118px;
+        padding: 18px 48px 18px 18px;
+    }
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_mcd_home" model="ir.actions.client">
+        <field name="name">Trang chủ</field>
+        <field name="tag">mcd_backend_theme.Home</field>
+    </record>
+</odoo>

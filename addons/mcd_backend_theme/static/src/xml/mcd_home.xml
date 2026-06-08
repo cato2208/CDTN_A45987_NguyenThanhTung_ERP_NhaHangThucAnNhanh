@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="mcd_backend_theme.Home">
+        <main class="o_mcd_home">
+            <section class="o_mcd_home_header">
+                <div class="o_mcd_home_brand">
+                    <div class="o_mcd_home_mark">
+                        <img src="/mcd_backend_theme/static/src/img/logo-mcdonalds.png" alt="McDonald's"/>
+                    </div>
+                    <div class="o_mcd_home_title">
+                        <p class="o_mcd_home_kicker">McDonald's Operations Hub</p>
+                        <h1>Trung tâm vận hành</h1>
+                        <p>Điều phối bán hàng, bếp, kho và báo cáo trong một màn hình tập trung.</p>
+                    </div>
+                </div>
+                <div class="o_mcd_home_badges">
+                    <button type="button" t-on-click="() => this.openQuickApp('pos')">POS</button>
+                    <button type="button" t-on-click="() => this.openQuickApp('kds')">KDS</button>
+                    <button type="button" t-on-click="() => this.openQuickApp('expo')">EXPO</button>
+                    <button type="button" t-on-click="() => this.openQuickApp('dashboard')">BI</button>
+                </div>
+            </section>
+
+            <section class="o_mcd_home_grid">
+                <button
+                    t-foreach="apps"
+                    t-as="app"
+                    t-key="app.id"
+                    type="button"
+                    t-attf-class="o_mcd_home_app o_mcd_home_app_{{this.appTone(app)}}"
+                    t-on-click="() => this.openApp(app)"
+                >
+                    <span class="o_mcd_home_app_icon">
+                        <i t-att-class="this.appIcon(app)"/>
+                    </span>
+                    <span class="o_mcd_home_app_body">
+                        <span class="o_mcd_home_app_name" t-esc="app.name"/>
+                        <span class="o_mcd_home_app_desc" t-esc="this.appDescription(app)"/>
+                    </span>
+                    <span class="o_mcd_home_app_arrow">
+                        <i class="fa fa-arrow-right"/>
+                    </span>
+                </button>
+            </section>
+        </main>
+    </t>
+</templates>

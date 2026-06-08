@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="mcd_customer.PaymentCustomerBox" owl="1">
+        <div class="mcd-customer-card">
+            <div class="mcd-customer-title">Khách hàng tích điểm</div>
+
+            <div class="mcd-customer-phone-row">
+                <input
+                    class="mcd-customer-input"
+                    type="tel"
+                    inputmode="tel"
+                    placeholder="Nhập SĐT khách hàng"
+                    t-att-value="mcdCustomerState.phone"
+                    t-att-disabled="mcdCustomerState.loading"
+                    t-on-input="(ev) => this.mcdOnPhoneInput(ev.target.value)"
+                />
+                <button
+                    class="mcd-customer-find"
+                    type="button"
+                    t-att-disabled="mcdCustomerState.loading"
+                    t-on-click="() => this.mcdLookupCustomer(true)">
+                    Tìm
+                </button>
+            </div>
+
+            <div t-if="mcdCustomerState.loading" class="mcd-customer-hint">
+                Đang kiểm tra khách hàng...
+            </div>
+            <div t-if="mcdCustomerState.error" class="mcd-customer-error">
+                <t t-esc="mcdCustomerState.error"/>
+            </div>
+
+            <div t-if="currentOrder.get_partner()" class="mcd-customer-selected">
+                <div>
+                    <div class="mcd-customer-name" t-esc="currentOrder.get_partner().name"/>
+                    <div class="mcd-customer-meta" t-if="mcdCustomerState.customer">
+                        <span>Điểm hiện có: </span>
+                        <strong t-esc="mcdCustomerState.customer.loyalty_points || 0"/>
+                        <span> | Đã mua: </span>
+                        <strong t-esc="mcdCustomerState.customer.order_count || 0"/>
+                        <span> đơn</span>
+                    </div>
+                    <div class="mcd-customer-meta">
+                        Đơn này dự kiến cộng <strong t-esc="mcdPointPreview()"/> điểm
+                    </div>
+                </div>
+                <button type="button" class="mcd-customer-clear" t-on-click="mcdClearCustomer">
+                    Bỏ
+                </button>
+            </div>
+
+            <div t-elif="mcdCustomerState.lookupDone &amp;&amp; mcdCustomerState.isNew" class="mcd-customer-new">
+                <div class="mcd-customer-hint">
+                    SĐT chưa có. Nhập thêm tên và ngày sinh nếu khách muốn tích điểm.
+                </div>
+                <input
+                    class="mcd-customer-input"
+                    type="text"
+                    placeholder="Tên khách hàng"
+                    t-att-value="mcdCustomerState.name"
+                    t-on-input="(ev) => this.mcdOnNameInput(ev.target.value)"
+                />
+                <input
+                    class="mcd-customer-input"
+                    type="date"
+                    t-att-value="mcdCustomerState.birthdate"
+                    t-on-input="(ev) => this.mcdOnBirthdateInput(ev.target.value)"
+                />
+                <button
+                    type="button"
+                    class="mcd-customer-save"
+                    t-att-disabled="mcdCustomerState.loading"
+                    t-on-click="mcdSaveCustomer">
+                    Lưu khách hàng
+                </button>
+            </div>
+
+            <div t-elif="mcdCustomerState.message" class="mcd-customer-hint">
+                <t t-esc="mcdCustomerState.message"/>
+            </div>
+
+            <div class="mcd-customer-skip">
+                Bỏ trống nếu khách không muốn cung cấp thông tin.
+            </div>
+        </div>
+    </t>
+
+    <t t-inherit="point_of_sale.PaymentScreenButtons" t-inherit-mode="extension">
+        <xpath expr="//div[contains(@class, 'payment-buttons')]" position="after">
+            <t t-call="mcd_customer.PaymentCustomerBox"/>
+        </xpath>
+    </t>
+
+</templates>
