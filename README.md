@@ -18,7 +18,7 @@ Thu muc nay gom cac module tuy chinh duoc phat trien tren nen tang Odoo 17:
 - `mcd_pos_modifier`: tuy chinh mon an trong POS va xu ly dong bo don hang.
 - `mcd_pos_order_type`: phan loai hinh thuc don hang an tai cho/mang di.
 
-File `mcd_database_schema.drawio` la so do co so du lieu/ERD phuc vu tai lieu thiet ke.
+So do ERD va tai lieu thiet ke duoc trinh bay trong bao cao do an. Repository nay chi gom source code cac module custom.
 
 ## Cach trien khai
 
