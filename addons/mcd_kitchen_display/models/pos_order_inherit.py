@@ -26,7 +26,7 @@ class PosOrder(models.Model):
         if hasattr(self, '_mcd_ensure_display_code'):
             self._mcd_ensure_display_code()
         display_code = getattr(self, 'mcd_display_code', False) or self.pos_reference or self.name
-        lines = self._mcd_prepare_display_lines()
+        lines = self._mcd_prepare_kitchen_display_lines()
 
         if not lines:
             return False
@@ -39,7 +39,7 @@ class PosOrder(models.Model):
             'line_ids': lines,
         })
 
-    def _mcd_prepare_display_lines(self):
+    def _mcd_prepare_kitchen_display_lines(self):
         grouped = {}
         for line in self.lines:
             if not line.product_id or line.qty <= 0:

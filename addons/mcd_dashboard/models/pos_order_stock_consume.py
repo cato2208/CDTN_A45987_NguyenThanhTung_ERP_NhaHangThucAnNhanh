@@ -62,45 +62,87 @@ class PosOrder(models.Model):
                 continue
 
             selections = self._mcd_modifier_selections(line)
-            only_bom_line_id = next(
-                (line_id for line_id, action in selections.items() if action == "only"),
-                None,
+            self._mcd_add_bom_consumption(
+                product,
+                sale_qty,
+                totals,
+                bom_cache,
+                selections=selections,
             )
-            finished_factor = sale_qty / (bom.product_qty or 1.0)
-
-            for bom_line in bom.bom_line_ids:
-                material = bom_line.product_id
-                if not material:
-                    continue
-
-                action = selections.get(str(bom_line.id))
-                if only_bom_line_id:
-                    multiplier = 1 if str(bom_line.id) == only_bom_line_id else 0
-                elif action == "remove":
-                    multiplier = 0
-                elif action == "extra":
-                    multiplier = 2
-                else:
-                    multiplier = 1
-
-                raw_qty = finished_factor * (bom_line.product_qty or 0.0) * multiplier
-                if raw_qty <= 0:
-                    continue
-
-                try:
-                    consumed_qty = bom_line.product_uom_id._compute_quantity(raw_qty, material.uom_id)
-                except Exception:
-                    consumed_qty = raw_qty
-
-                key = (material.id, material.uom_id.id)
-                totals[key]["material"] = material
-                totals[key]["qty"] += consumed_qty
 
         return {
             key: (value["material"], value["qty"])
             for key, value in totals.items()
             if value["material"] and value["qty"] > 0
         }
+
+    def _mcd_add_bom_consumption(self, product, qty, totals, bom_cache, selections=None, depth=0):
+        """Explode a sold product BOM recursively and collect real stockable materials.
+
+        Combos are configured as kit BOMs whose components are sale products such
+        as burgers, fries and drinks. Those components also have BOMs, so a
+        single-level BOM read would stop too early and would not consume stock.
+        """
+        if not product or qty <= 0 or depth > 5:
+            return
+
+        bom = self._mcd_find_bom(product, bom_cache)
+        if not bom:
+            if product.type == "product":
+                key = (product.id, product.uom_id.id)
+                totals[key]["material"] = product
+                totals[key]["qty"] += qty
+            return
+
+        selections = selections or {}
+        only_bom_line_id = next(
+            (line_id for line_id, action in selections.items() if action == "only"),
+            None,
+        )
+        finished_factor = qty / (bom.product_qty or 1.0)
+
+        for bom_line in bom.bom_line_ids:
+            material = bom_line.product_id
+            if not material:
+                continue
+
+            action = selections.get(str(bom_line.id))
+            if only_bom_line_id:
+                multiplier = 1 if str(bom_line.id) == only_bom_line_id else 0
+            elif action == "remove":
+                multiplier = 0
+            elif action == "extra":
+                multiplier = 2
+            else:
+                multiplier = 1
+
+            raw_qty = finished_factor * (bom_line.product_qty or 0.0) * multiplier
+            if raw_qty <= 0:
+                continue
+
+            try:
+                consumed_qty = bom_line.product_uom_id._compute_quantity(raw_qty, material.uom_id)
+            except Exception:
+                consumed_qty = raw_qty
+
+            child_bom = self._mcd_find_bom(material, bom_cache)
+            if child_bom:
+                self._mcd_add_bom_consumption(
+                    material,
+                    consumed_qty,
+                    totals,
+                    bom_cache,
+                    selections={},
+                    depth=depth + 1,
+                )
+                continue
+
+            if material.type != "product":
+                continue
+
+            key = (material.id, material.uom_id.id)
+            totals[key]["material"] = material
+            totals[key]["qty"] += consumed_qty
 
     def _mcd_find_bom(self, product, cache=None):
         if not product or "mrp.bom" not in self.env.registry:

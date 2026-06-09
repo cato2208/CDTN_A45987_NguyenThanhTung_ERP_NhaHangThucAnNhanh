@@ -26,7 +26,7 @@ class PosOrder(models.Model):
         if hasattr(self, '_mcd_ensure_display_code'):
             self._mcd_ensure_display_code()
         display_code = getattr(self, 'mcd_display_code', False) or self.pos_reference or self.name
-        lines = self._mcd_prepare_display_lines()
+        lines = self._mcd_prepare_expo_display_lines()
 
         if not lines:
             return False
@@ -39,10 +39,12 @@ class PosOrder(models.Model):
             'line_ids': lines,
         })
 
-    def _mcd_prepare_display_lines(self):
+    def _mcd_prepare_expo_display_lines(self):
         grouped = {}
         for line in self.lines:
             if not line.product_id or line.qty <= 0:
+                continue
+            if self._mcd_skip_expo_product(line.product_id):
                 continue
             modifier_note = (getattr(line, 'modifier_note', '') or '').strip()
             key = (line.product_id.id, modifier_note)
@@ -58,3 +60,15 @@ class PosOrder(models.Model):
             for vals in grouped.values()
             if vals['qty'] > 0
         ]
+
+    def _mcd_skip_expo_product(self, product):
+        name = (product.display_name or product.name or '').lower()
+        default_code = (product.default_code or '').upper()
+        category = (product.categ_id.complete_name or product.categ_id.name or '').lower()
+        return (
+            'gift card' in name
+            or 'thẻ quà' in name
+            or 'the qua' in name
+            or 'gift card' in category
+            or default_code.startswith('MCD-DEMO-')
+        )

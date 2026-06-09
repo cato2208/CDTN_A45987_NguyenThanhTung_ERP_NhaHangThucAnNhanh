@@ -9,6 +9,15 @@ class ExpoDisplayController(http.Controller):
         local_dt = fields.Datetime.context_timestamp(request.env.user, value)
         return local_dt.strftime('%d/%m/%Y %H:%M')
 
+    def _receipt_reference(self, order):
+        pos_order = order.pos_order_id
+        reference = (pos_order.pos_reference or pos_order.name or '').strip()
+        if ' ' in reference:
+            possible_number = reference.rsplit(' ', 1)[-1].strip()
+            if any(char.isdigit() for char in possible_number):
+                return possible_number
+        return reference
+
     @http.route(
         '/mcd_expo/get_orders',
         type='json',
@@ -44,6 +53,7 @@ class ExpoDisplayController(http.Controller):
             return request.not_found()
         return request.render('mcd_expo_display.print_pick_list_template', {
             'order': order,
+            'receipt_reference': self._receipt_reference(order),
             'printed_at': self._format_dt(fields.Datetime.now()),
             'order_time': self._format_dt(order.order_time),
             'serve_time': self._format_dt(order.serve_time),

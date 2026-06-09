@@ -38,6 +38,10 @@
                         font-size: 18px;
                         font-weight: 800;
                     }
+                    .receipt-no {
+                        font-size: 15px;
+                        font-weight: 800;
+                    }
                     .service {
                         border: 1px solid #111;
                         display: inline-block;
@@ -93,6 +97,10 @@
                         <div class="meta-row">
                             <span>Order</span>
                             <span class="order-no" t-esc="order.name"/>
+                        </div>
+                        <div class="meta-row" t-if="receipt_reference">
+                            <span>Receipt</span>
+                            <span class="receipt-no" t-esc="receipt_reference"/>
                         </div>
                         <div class="service">
                             <t t-esc="order.service_type == 'take_out' and 'TAKE OUT' or 'EAT IN'"/>
