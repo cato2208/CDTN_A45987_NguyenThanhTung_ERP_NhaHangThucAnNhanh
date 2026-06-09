@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <menuitem id="menu_expo_root"
+              name="Expo Display"
+              sequence="10"
+              />
+
+    <!-- Live KDS screen -->
+    <menuitem id="menu_expo_display_screen"
+              name="🖥  Display Screen"
+              parent="menu_expo_root"
+              action="action_expo_display"
+              sequence="1"/>
+
+    <!-- Admin: manage orders -->
+    <menuitem id="menu_expo_orders"
+              name="📋  Manage Expo Orders"
+              parent="menu_expo_root"
+              action="action_expo_order"
+              sequence="2"/>
+
+</odoo>

@@ -1,0 +1,55 @@
+:root {
+    --mcd-red: #da291c;
+    --mcd-yellow: #ffc72c;
+}
+
+.o_web_client .o_home_menu_background,
+.o_web_client .o_home_menu {
+    background:
+        radial-gradient(circle at 16% 10%, rgba(255, 199, 44, 0.14), transparent 28%),
+        radial-gradient(circle at 82% 22%, rgba(218, 41, 28, 0.16), transparent 24%),
+        linear-gradient(135deg, #07131c 0%, #0a1020 45%, #080713 100%) !important;
+    color: #fff;
+}
+
+.o_web_client .o_home_menu .o_apps,
+.o_web_client .o_home_menu_background .o_apps {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-top: clamp(46px, 8vh, 96px);
+    gap: 34px 54px;
+}
+
+.o_web_client .o_home_menu .o_app,
+.o_web_client .o_home_menu_background .o_app {
+    color: #fff !important;
+    border-radius: 14px;
+    padding: 12px 14px;
+    transition: transform 0.16s ease, background-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.o_web_client .o_home_menu .o_app:hover,
+.o_web_client .o_home_menu_background .o_app:hover {
+    background-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.22);
+    transform: translateY(-3px);
+}
+
+.o_web_client .o_home_menu .o_app .o_app_icon,
+.o_web_client .o_home_menu_background .o_app .o_app_icon {
+    width: 88px;
+    height: 88px;
+    padding: 12px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 18px 32px rgba(0, 0, 0, 0.28);
+}
+
+.o_web_client .o_home_menu .o_app .o_caption,
+.o_web_client .o_home_menu_background .o_app .o_caption {
+    margin-top: 12px;
+    color: #fff;
+    font-weight: 600;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.38);
+}

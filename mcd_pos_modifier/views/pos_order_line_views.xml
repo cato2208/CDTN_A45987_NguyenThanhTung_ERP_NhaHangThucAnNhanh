@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- POS Order Line: hiển thị modifier fields -->
+    <record id="view_pos_order_line_form_inherit_mcd_modifier" model="ir.ui.view">
+        <field name="name">pos.order.line.form.mcd.modifier</field>
+        <field name="model">pos.order.line</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_order_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <group string="Modifiers">
+                    <field name="modifier_price_extra"/>
+                    <field name="modifier_note"/>
+                    <field name="modifier_json" invisible="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- BoM form: thêm cột Giá POS vào bảng Components -->
+    <record id="view_mrp_bom_form_inherit_mcd_price" model="ir.ui.view">
+        <field name="name">mrp.bom.form.mcd.price</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Thêm sau cột product_uom_id trong bảng bom_line_ids -->
+            <xpath expr="//field[@name='bom_line_ids']//field[@name='product_uom_id']" position="after">
+                <field name="mcd_modifier_price" string="Giá POS (đ)" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

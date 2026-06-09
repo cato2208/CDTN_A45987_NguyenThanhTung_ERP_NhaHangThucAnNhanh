@@ -1,0 +1,40 @@
+{
+    'name': 'McDonald Dashboard',
+    'version': '2.0',
+    'category': 'Reporting',
+    'summary': 'Dashboard 6 sections: Manager, Kitchen, Expo, Sales, Inventory, Waste',
+    'depends': [
+        'web',
+        'point_of_sale',
+        'stock',
+        'mrp',
+        'purchase',
+        'mcd_kiosk',
+        'mcd_kitchen_display',
+        'mcd_expo_display',
+    ],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/dashboard_views.xml',
+        'views/login_templates.xml',
+    ],
+    'assets': {
+        'web.assets_web': [
+            'mcd_dashboard/static/src/js/chart.umd.min.js',
+            'mcd_dashboard/static/src/css/dashboard.css',
+            'mcd_dashboard/static/src/xml/kds_dashboard.xml',
+            'mcd_dashboard/static/src/js/chart_loader.js',
+            'mcd_dashboard/static/src/js/kds_dashboard.js',
+        ],
+        'web.assets_backend': [
+            'mcd_dashboard/static/src/js/chart.umd.min.js',
+            'mcd_dashboard/static/src/css/dashboard.css',
+            'mcd_dashboard/static/src/xml/kds_dashboard.xml',
+            'mcd_dashboard/static/src/js/chart_loader.js',
+            'mcd_dashboard/static/src/js/kds_dashboard.js',
+        ],
+    },
+    'installable': True,
+    'application': True,
+    'license': 'LGPL-3',
+}

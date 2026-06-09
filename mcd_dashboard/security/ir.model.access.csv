@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mcd_waste_entry_all,mcd.waste.entry all,model_mcd_waste_entry,,1,1,1,0
+access_mcd_dashboard_demo_data_wizard_all,mcd.dashboard.demo.data.wizard all,model_mcd_dashboard_demo_data_wizard,,1,1,1,1

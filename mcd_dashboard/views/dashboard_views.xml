@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_mcd_dashboard" model="ir.actions.client">
+        <field name="name">McDonald Dashboard</field>
+        <field name="tag">mcd_kds.KDSDashboard</field>
+    </record>
+
+    <menuitem id="menu_mcd_dashboard_root"
+              name="McDonald Dashboard"
+              action="action_mcd_dashboard"
+              sequence="1"
+              web_icon="mcd_dashboard,static/src/img/icon.png"/>
+
+    <menuitem id="menu_mcd_dashboard"
+              name="Analytics"
+              parent="menu_mcd_dashboard_root"
+              action="action_mcd_dashboard"
+              sequence="1"/>
+
+    <record id="view_mcd_dashboard_demo_data_wizard_form" model="ir.ui.view">
+        <field name="name">mcd.dashboard.demo.data.wizard.form</field>
+        <field name="model">mcd.dashboard.demo.data.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Dashboard Demo Data">
+                <group>
+                    <group>
+                        <field name="months"/>
+                        <field name="clear_existing"/>
+                        <field name="kiosk_ratio"/>
+                    </group>
+                    <group>
+                        <field name="weekday_orders"/>
+                        <field name="weekend_orders"/>
+                        <field name="holiday_orders"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate" type="object" string="Generate Data" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mcd_dashboard_demo_data_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Demo Data</field>
+        <field name="res_model">mcd.dashboard.demo.data.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_mcd_dashboard_demo_data"
+              name="Generate Demo Data"
+              parent="menu_mcd_dashboard_root"
+              action="action_mcd_dashboard_demo_data_wizard"
+              groups="base.group_no_one"
+              sequence="20"/>
+
+    <record id="menu_mcd_dashboard_demo_data" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+</odoo>
